@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:layout_margin="16dp"
         android:stretchColumns="3"
-        tools:context="FragmentsActivities.LoginFragment">
+        tools:context=".LoginFragment">
 
         <TableRow>
             <TextView
@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_span="3"
-                android:inputType="number" />
+                android:inputType="text" />
         </TableRow>
 
         <TableRow>
@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_span="3"
-                android:inputType="number" />
+                android:inputType="text" />
         </TableRow>
 
         <TableRow>
@@ -116,6 +116,34 @@
                 android:layout_height="wrap_content"
                 android:layout_span="3"
                 android:inputType="textEmailAddress" />
+        </TableRow>
+
+        <TableRow>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="@string/gender" />
+            <RadioGroup
+                android:id="@+id/radioGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" >
+
+                <RadioButton
+                    android:id="@+id/radioButtonMale"
+                    android:layout_width="105dp"
+                    android:layout_height="wrap_content"
+                    android:buttonTint="#BC0606"
+                    android:checked="true"
+                    android:text="@string/radioButtonMale" />
+
+                <RadioButton
+                    android:id="@+id/radioButtonFemale"
+                    android:layout_width="124dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/radioButtonFemale" />
+            </RadioGroup>
+
         </TableRow>
 
         <LinearLayout

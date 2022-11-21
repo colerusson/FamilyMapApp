@@ -8,6 +8,9 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import request.LoginRequest;
+import request.RegisterRequest;
+
 public class ServerProxy {
 
     // TODO: need to use request classes to make the requests and pass them in here,
@@ -99,7 +102,7 @@ public class ServerProxy {
         }
     }
 
-    private static void register(String serverHost, String serverPort) {
+    private static void register(String serverHost, String serverPort, RegisterRequest registerRequest) {
 
         try {
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/register");
@@ -146,7 +149,7 @@ public class ServerProxy {
         }
     }
 
-    private static void login(String serverHost, String serverPort) {
+    private static void login(String serverHost, String serverPort, LoginRequest loginRequest) {
 
         try {
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/login");
