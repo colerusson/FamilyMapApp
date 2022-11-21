@@ -13,6 +13,8 @@ public class ServerProxy {
     // TODO: need to use request classes to make the requests and pass them in here,
     //  then use the result classes to pass back
 
+    // TODO: Edit these classes so they actually take in what is needed
+
     private static void getEventList(String serverHost, String serverPort) {
 
         try {
