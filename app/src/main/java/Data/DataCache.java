@@ -1,11 +1,12 @@
 package Data;
 
-import android.app.Person;
-import android.media.metrics.Event;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import model.Event;
+import model.Person;
 
 public class DataCache {
 
@@ -18,24 +19,40 @@ public class DataCache {
     private DataCache() {
     }
 
-    Map<String, Person> people;
-    Map<String, Event> events;
-    Map<String, List<Event>> personEvents;
-    Set<String> paternalAncestors;
-    Set<String> maternalAncestors;
+    private Map<String, Person> people;
+    private Map<String, Event> events;
+    private Map<String, List<Event>> personEvents;
+    private Set<String> paternalAncestors;
+    private Set<String> maternalAncestors;
+    private String currentAuthToken;
+    private boolean currentSuccess;
 
-    // TODO: write the necessary setters so that they are correctly added to maps
-
-    Person getPersonById(String id) {
-        return people.get(id);
+    public boolean isCurrentSuccess() {
+        return currentSuccess;
     }
 
-    Event getEventById(String id) {
-        return events.get(id);
+    public void setCurrentSuccess(boolean currentSuccess) {
+        this.currentSuccess = currentSuccess;
     }
 
-    List<Event> getPersonEvents(String id)  {
-        return personEvents.get(id);
+    public String getCurrentAuthToken() {
+        return currentAuthToken;
+    }
+
+    public void setCurrentAuthToken(String currentAuthToken) {
+        this.currentAuthToken = currentAuthToken;
+    }
+
+    public void setPeople(List<Person> persons) {
+        for (Person personToAdd : persons) {
+            people.put(personToAdd.getPersonID(), personToAdd);
+        }
+    }
+
+    public void setEvents(List<Event> eventsList) {
+        for (Event eventToAdd : eventsList) {
+            events.put(eventToAdd.getEventID(), eventToAdd);
+        }
     }
 
 }

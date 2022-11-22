@@ -1,5 +1,11 @@
 package Data;
 
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+
+import com.google.gson.Gson;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -7,16 +13,60 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Arrays;
 
 import request.LoginRequest;
 import request.RegisterRequest;
+import result.EventResult;
+import result.LoginResult;
+import result.PersonResult;
+import result.RegisterResult;
 
-public class ServerProxy {
+public class ServerProxy implements Runnable {
 
-    // TODO: need to use request classes to make the requests and pass them in here,
-    //  then use the result classes to pass back
+    static private DataCache cache = DataCache.getInstance();
 
-    // TODO: Edit these classes so they actually take in what is needed
+    private final Handler messageHandler;
+    private LoginRequest loginRequest;
+    private RegisterRequest registerRequest;
+    private String serverHost;
+    private String serverPort;
+
+    public ServerProxy(Handler messageHandler, LoginRequest loginRequest, RegisterRequest registerRequest, String serverHost, String serverPort) {
+        this.messageHandler = messageHandler;
+        this.loginRequest = loginRequest;
+        this.registerRequest = registerRequest;
+        this.serverHost = serverHost;
+        this.serverPort = serverPort;
+    }
+
+    @Override
+    public void run() {
+        if (cache.getCurrentAuthToken() == null) {
+            register(serverHost, serverPort, registerRequest);
+        }
+        login(serverHost, serverPort, loginRequest);
+
+        if (cache.getCurrentAuthToken() != null) {
+            getEventList(serverHost, serverPort);
+            getPersonList(serverHost, serverPort);
+            cache.setCurrentSuccess(true);
+        }
+        else {
+            cache.setCurrentSuccess(false);
+        }
+
+        sendMessage();
+    }
+
+    private void sendMessage() {
+        Message message = Message.obtain();
+
+        Bundle messageBundle = new Bundle();
+        message.setData(messageBundle);
+
+        messageHandler.sendMessage(message);
+    }
 
     private static void getEventList(String serverHost, String serverPort) {
 
@@ -25,33 +75,27 @@ public class ServerProxy {
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("GET");
             http.setDoOutput(false);
+            Gson gson = new Gson();
 
             // Add an auth token to the request in the HTTP "Authorization" header
-            http.addRequestProperty("Authorization", "afj232hj2332");
-            http.addRequestProperty("Accept", "application/json");
+            http.addRequestProperty("Authorization", cache.getCurrentAuthToken());
 
             // Connect to the server and send the HTTP request
             http.connect();
 
-            if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
 
-                // Get the input stream containing the HTTP response body
+            if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream respBody = http.getInputStream();
-                // Extract JSON data from the HTTP response body
                 String respData = readString(respBody);
-                // Display the JSON data returned from the server
-                System.out.println(respData);
+                EventResult eventResult = gson.fromJson(respData, EventResult.class);
             }
             else {
-                // The HTTP response status code indicates an error
-                // occurred, so print out the message from the HTTP response
-                System.out.println("ERROR: " + http.getResponseMessage());
                 // Get the error stream containing the HTTP response body (if any)
                 InputStream respBody = http.getErrorStream();
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
-                // Display the data returned from the server
-                System.out.println(respData);
+                EventResult eventResult = gson.fromJson(respData, EventResult.class);
+                cache.setEvents(Arrays.asList(eventResult.getData()));
             }
         }
         catch (IOException e) {
@@ -67,33 +111,26 @@ public class ServerProxy {
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("GET");
             http.setDoOutput(false);
+            Gson gson = new Gson();
 
             // Add an auth token to the request in the HTTP "Authorization" header
-            http.addRequestProperty("Authorization", "afj232hj2332");
-            http.addRequestProperty("Accept", "application/json");
+            http.addRequestProperty("Authorization", cache.getCurrentAuthToken());
 
             // Connect to the server and send the HTTP request
             http.connect();
 
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                // Get the input stream containing the HTTP response body
                 InputStream respBody = http.getInputStream();
-                // Extract JSON data from the HTTP response body
                 String respData = readString(respBody);
-                // Display the JSON data returned from the server
-                System.out.println(respData);
+                PersonResult personResult = gson.fromJson(respData, PersonResult.class);
             }
             else {
-                // The HTTP response status code indicates an error
-                // occurred, so print out the message from the HTTP response
-                System.out.println("ERROR: " + http.getResponseMessage());
                 // Get the error stream containing the HTTP response body (if any)
                 InputStream respBody = http.getErrorStream();
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
-                // Display the data returned from the server
-                System.out.println(respData);
+                PersonResult personResult = gson.fromJson(respData, PersonResult.class);
+                cache.setPeople(Arrays.asList(personResult.getData()));
             }
         }
         catch (IOException e) {
@@ -109,19 +146,12 @@ public class ServerProxy {
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);	// There is a request body
-
-            // Add an auth token to the request in the HTTP "Authorization" header
-            http.addRequestProperty("Authorization", "afj232hj2332");
-            http.addRequestProperty("Accept", "application/json");
+            Gson gson = new Gson();
 
             // Connect to the server and send the HTTP request
             http.connect();
 
-            String reqData =
-                    "{" +
-                            "\"route\": \"atlanta-miami\"" +
-                            "}";
-
+            String reqData = gson.toJson(registerRequest);
             // Get the output stream containing the HTTP request body
             OutputStream reqBody = http.getOutputStream();
             // Write the JSON data to the request body
@@ -129,18 +159,17 @@ public class ServerProxy {
             reqBody.close();
 
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                System.out.println("Route successfully claimed.");
+                InputStream respBody = http.getInputStream();
+                String respData = readString(respBody);
+                RegisterResult registerResult = gson.fromJson(respData, RegisterResult.class);
+                cache.setCurrentAuthToken(registerResult.getAuthtoken());
             }
             else {
-                // The HTTP response status code indicates an error
-                // occurred, so print out the message from the HTTP response
-                System.out.println("ERROR: " + http.getResponseMessage());
                 // Get the error stream containing the HTTP response body (if any)
                 InputStream respBody = http.getErrorStream();
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
-                // Display the data returned from the server
-                System.out.println(respData);
+                RegisterResult registerResult = gson.fromJson(respData, RegisterResult.class);
             }
         }
         catch (IOException e) {
@@ -156,38 +185,31 @@ public class ServerProxy {
             HttpURLConnection http = (HttpURLConnection)url.openConnection();
             http.setRequestMethod("POST");
             http.setDoOutput(true);	// There is a request body
-
-            // Add an auth token to the request in the HTTP "Authorization" header
-            http.addRequestProperty("Authorization", "afj232hj2332");
-            http.addRequestProperty("Accept", "application/json");
+            Gson gson = new Gson();
 
             // Connect to the server and send the HTTP request
             http.connect();
 
-            String reqData =
-                    "{" +
-                            "\"route\": \"atlanta-miami\"" +
-                            "}";
-
+            String reqData = gson.toJson(loginRequest);
             // Get the output stream containing the HTTP request body
             OutputStream reqBody = http.getOutputStream();
             // Write the JSON data to the request body
             writeString(reqData, reqBody);
             reqBody.close();
 
+
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
-                System.out.println("Route successfully claimed.");
+                InputStream respBody = http.getInputStream();
+                String respData = readString(respBody);
+                LoginResult loginResult = gson.fromJson(respData, LoginResult.class);
+                cache.setCurrentAuthToken(loginResult.getAuthtoken());
             }
             else {
-                // The HTTP response status code indicates an error
-                // occurred, so print out the message from the HTTP response
-                System.out.println("ERROR: " + http.getResponseMessage());
                 // Get the error stream containing the HTTP response body (if any)
                 InputStream respBody = http.getErrorStream();
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
-                // Display the data returned from the server
-                System.out.println(respData);
+                LoginResult loginResult = gson.fromJson(respData, LoginResult.class);
             }
         }
         catch (IOException e) {
