@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -73,6 +76,7 @@ public class LoginFragment extends Fragment {
         }));
 
         Button loginButton = view.findViewById(R.id.loginButton);
+
         loginButton.setEnabled(false);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -156,6 +160,40 @@ public class LoginFragment extends Fragment {
             }
 
         });
+
+        TextWatcher textWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String serverHost = serverHostInput.getText().toString().trim();
+                String serverPort = serverPortInput.getText().toString().trim();
+                String username = userNameInput.getText().toString().trim();
+                String password = passwordInput.getText().toString().trim();
+                String firstName = firstNameInput.getText().toString().trim();
+                String lastName = lastNameInput.getText().toString().trim();
+                String email = emailInput.getText().toString().trim();
+
+                loginButton.setEnabled(!serverHost.isEmpty() && !serverPort.isEmpty() && !username.isEmpty() &&!password.isEmpty());
+                registerButton.setEnabled(!serverHost.isEmpty() && !serverPort.isEmpty() && !username.isEmpty() &&!password.isEmpty() && !firstName.isEmpty() && !lastName.isEmpty() && !email.isEmpty());
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        };
+
+        serverHostInput.addTextChangedListener(textWatcher);
+        serverPortInput.addTextChangedListener(textWatcher);
+        userNameInput.addTextChangedListener(textWatcher);
+        passwordInput.addTextChangedListener(textWatcher);
+        firstNameInput.addTextChangedListener(textWatcher);
+        lastNameInput.addTextChangedListener(textWatcher);
+        emailInput.addTextChangedListener(textWatcher);
 
         return view;
     }
