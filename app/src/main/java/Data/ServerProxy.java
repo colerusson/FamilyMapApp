@@ -1,9 +1,5 @@
 package Data;
 
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -22,53 +18,11 @@ import result.LoginResult;
 import result.PersonResult;
 import result.RegisterResult;
 
-public class ServerProxy implements Runnable {
+public class ServerProxy  {
 
-    static private DataCache cache = DataCache.getInstance();
+    static private final DataCache cache = DataCache.getInstance();
 
-    private final Handler messageHandler;
-    private LoginRequest loginRequest;
-    private RegisterRequest registerRequest;
-    private String serverHost;
-    private String serverPort;
-
-    public ServerProxy(Handler messageHandler, LoginRequest loginRequest, RegisterRequest registerRequest, String serverHost, String serverPort) {
-        this.messageHandler = messageHandler;
-        this.loginRequest = loginRequest;
-        this.registerRequest = registerRequest;
-        this.serverHost = serverHost;
-        this.serverPort = serverPort;
-    }
-
-    @Override
-    public void run() {
-        if (cache.getCurrentAuthToken() == null) {
-            register(serverHost, serverPort, registerRequest);
-        }
-        login(serverHost, serverPort, loginRequest);
-
-        if (cache.getCurrentAuthToken() != null) {
-            getEventList(serverHost, serverPort);
-            getPersonList(serverHost, serverPort);
-            cache.setCurrentSuccess(true);
-        }
-        else {
-            cache.setCurrentSuccess(false);
-        }
-
-        sendMessage();
-    }
-
-    private void sendMessage() {
-        Message message = Message.obtain();
-
-        Bundle messageBundle = new Bundle();
-        message.setData(messageBundle);
-
-        messageHandler.sendMessage(message);
-    }
-
-    private static void getEventList(String serverHost, String serverPort) {
+    public void getEventList(String serverHost, String serverPort, String authToken) {
 
         try {
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/event");
@@ -78,7 +32,7 @@ public class ServerProxy implements Runnable {
             Gson gson = new Gson();
 
             // Add an auth token to the request in the HTTP "Authorization" header
-            http.addRequestProperty("Authorization", cache.getCurrentAuthToken());
+            http.addRequestProperty("Authorization", authToken);
 
             // Connect to the server and send the HTTP request
             http.connect();
@@ -88,6 +42,7 @@ public class ServerProxy implements Runnable {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
                 EventResult eventResult = gson.fromJson(respData, EventResult.class);
+                cache.setEvents(Arrays.asList(eventResult.getData()));
             }
             else {
                 // Get the error stream containing the HTTP response body (if any)
@@ -95,7 +50,6 @@ public class ServerProxy implements Runnable {
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
                 EventResult eventResult = gson.fromJson(respData, EventResult.class);
-                cache.setEvents(Arrays.asList(eventResult.getData()));
             }
         }
         catch (IOException e) {
@@ -104,7 +58,7 @@ public class ServerProxy implements Runnable {
         }
     }
 
-    private static void getPersonList(String serverHost, String serverPort) {
+    public void getPersonList(String serverHost, String serverPort, String authToken) {
 
         try {
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/person");
@@ -114,7 +68,7 @@ public class ServerProxy implements Runnable {
             Gson gson = new Gson();
 
             // Add an auth token to the request in the HTTP "Authorization" header
-            http.addRequestProperty("Authorization", cache.getCurrentAuthToken());
+            http.addRequestProperty("Authorization", authToken);
 
             // Connect to the server and send the HTTP request
             http.connect();
@@ -123,6 +77,7 @@ public class ServerProxy implements Runnable {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
                 PersonResult personResult = gson.fromJson(respData, PersonResult.class);
+                cache.setPeople(Arrays.asList(personResult.getData()));
             }
             else {
                 // Get the error stream containing the HTTP response body (if any)
@@ -130,7 +85,6 @@ public class ServerProxy implements Runnable {
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
                 PersonResult personResult = gson.fromJson(respData, PersonResult.class);
-                cache.setPeople(Arrays.asList(personResult.getData()));
             }
         }
         catch (IOException e) {
@@ -139,7 +93,7 @@ public class ServerProxy implements Runnable {
         }
     }
 
-    private static void register(String serverHost, String serverPort, RegisterRequest registerRequest) {
+    public RegisterResult register(String serverHost, String serverPort, RegisterRequest registerRequest) {
 
         try {
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/register");
@@ -163,6 +117,8 @@ public class ServerProxy implements Runnable {
                 String respData = readString(respBody);
                 RegisterResult registerResult = gson.fromJson(respData, RegisterResult.class);
                 cache.setCurrentAuthToken(registerResult.getAuthtoken());
+                cache.setRootPersonID(registerResult.getPersonID());
+                return registerResult;
             }
             else {
                 // Get the error stream containing the HTTP response body (if any)
@@ -170,15 +126,17 @@ public class ServerProxy implements Runnable {
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
                 RegisterResult registerResult = gson.fromJson(respData, RegisterResult.class);
+                return registerResult;
             }
         }
         catch (IOException e) {
             // An exception was thrown, so display the exception's stack trace
             e.printStackTrace();
+            return null;
         }
     }
 
-    private static void login(String serverHost, String serverPort, LoginRequest loginRequest) {
+    public LoginResult login(String serverHost, String serverPort, LoginRequest loginRequest) {
 
         try {
             URL url = new URL("http://" + serverHost + ":" + serverPort + "/user/login");
@@ -203,6 +161,8 @@ public class ServerProxy implements Runnable {
                 String respData = readString(respBody);
                 LoginResult loginResult = gson.fromJson(respData, LoginResult.class);
                 cache.setCurrentAuthToken(loginResult.getAuthtoken());
+                cache.setRootPersonID(loginResult.getPersonID());
+                return loginResult;
             }
             else {
                 // Get the error stream containing the HTTP response body (if any)
@@ -210,11 +170,13 @@ public class ServerProxy implements Runnable {
                 // Extract data from the HTTP response body
                 String respData = readString(respBody);
                 LoginResult loginResult = gson.fromJson(respData, LoginResult.class);
+                return loginResult;
             }
         }
         catch (IOException e) {
             // An exception was thrown, so display the exception's stack trace
             e.printStackTrace();
+            return null;
         }
     }
 

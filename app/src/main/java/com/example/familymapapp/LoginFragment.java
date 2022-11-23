@@ -14,35 +14,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
-
-import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import Data.DataCache;
-import Data.ServerProxy;
 import request.LoginRequest;
 import request.RegisterRequest;
 
 
 public class LoginFragment extends Fragment {
 
-    private static final String SUCCESS_KEY = "SUCCESS";
-    private static final String FIRST_NAME_KEY = "FIRST_NAME";
-    private static final String LAST_NAME_KEY = "LAST_NAME";
-    static private DataCache cache = DataCache.getInstance();
+    public static final String SUCCESS_KEY = "SUCCESS";
+    static private final DataCache cache = DataCache.getInstance();
     private String gender;
-
-//    private Listener listener;
-//
-//    public interface Listener {
-//        void notifyDone();
-//    }
-//
-//    public void registerListener(Listener listener) { this.listener = listener; }
 
     public LoginFragment() {
         // Required empty public constructor
@@ -65,6 +51,8 @@ public class LoginFragment extends Fragment {
         EditText lastNameInput = view.findViewById(R.id.lastNameField);
         EditText emailInput = view.findViewById(R.id.emailField);
 
+        gender = "m";
+
         RadioGroup radioGroup = view.findViewById(R.id.radioGender);
         radioGroup.setOnCheckedChangeListener(((radioGender, i) -> {
             if (i == 0) {
@@ -76,7 +64,6 @@ public class LoginFragment extends Fragment {
         }));
 
         Button loginButton = view.findViewById(R.id.loginButton);
-
         loginButton.setEnabled(false);
 
         loginButton.setOnClickListener(new View.OnClickListener() {
@@ -84,37 +71,32 @@ public class LoginFragment extends Fragment {
             public void onClick(View view) {
                 // This is what you do when the user clicks a button
                 LoginRequest loginRequest = new LoginRequest();
-                RegisterRequest registerRequest = new RegisterRequest();
 
                 loginRequest.setPassword(passwordInput.getText().toString());
                 loginRequest.setUsername(userNameInput.getText().toString());
                 String serverHostVal = serverHostInput.getText().toString();
                 String serverPortVal = serverPortInput.getText().toString();
 
-                registerRequest.setPassword(passwordInput.getText().toString());
-                registerRequest.setUsername(userNameInput.getText().toString());
-                registerRequest.setEmail(emailInput.getText().toString());
-                registerRequest.setFirstName(firstNameInput.getText().toString());
-                registerRequest.setLastName(lastNameInput.getText().toString());
-                registerRequest.setGender(gender);
-
                 Handler uiThreadMessageHandler = new Handler(Looper.getMainLooper()) {
                     @Override
                     public void handleMessage(Message message) {
                         Bundle bundle = message.getData();
+                        boolean success = bundle.getBoolean(SUCCESS_KEY);
+                        if (success) {
+                            String firstName = cache.getPeople().get(cache.getRootPersonID()).getFirstName();
+                            String lastName = cache.getPeople().get(cache.getRootPersonID()).getLastName();
+                            Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            Toast.makeText(getActivity(),  "Error in logging user in", Toast.LENGTH_LONG).show();
+                        }
                     }
                 };
 
-                ServerProxy task = new ServerProxy(uiThreadMessageHandler, loginRequest, registerRequest, serverHostVal, serverPortVal);
+                LoginTask task = new LoginTask(uiThreadMessageHandler, loginRequest, serverHostVal, serverPortVal);
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 executor.submit(task);
 
-                if (cache.isCurrentSuccess()) {
-                    Toast.makeText(getActivity(),  firstNameInput.getText().toString() + " " + lastNameInput.getText().toString(), Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getActivity(),  "Error in logging user in", Toast.LENGTH_LONG).show();
-                }
             }
         });
 
@@ -124,7 +106,6 @@ public class LoginFragment extends Fragment {
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                LoginRequest loginRequest = new LoginRequest();
                 RegisterRequest registerRequest = new RegisterRequest();
 
                 registerRequest.setPassword(passwordInput.getText().toString());
@@ -136,27 +117,25 @@ public class LoginFragment extends Fragment {
                 String serverHostVal = serverHostInput.getText().toString();
                 String serverPortVal = serverPortInput.getText().toString();
 
-                loginRequest.setPassword(passwordInput.getText().toString());
-                loginRequest.setUsername(userNameInput.getText().toString());
-
                 Handler uiThreadMessageHandler = new Handler(Looper.getMainLooper()) {
                     @Override
                     public void handleMessage(Message message) {
                         Bundle bundle = message.getData();
+                        boolean success = bundle.getBoolean(SUCCESS_KEY);
+                        if (success) {
+                            String firstName = cache.getPeople().get(cache.getRootPersonID()).getFirstName();
+                            String lastName = cache.getPeople().get(cache.getRootPersonID()).getLastName();
+                            Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
+                        }
+                        else {
+                            Toast.makeText(getActivity(),  "Error in registering user", Toast.LENGTH_LONG).show();
+                        }
                     }
                 };
 
-                ServerProxy task = new ServerProxy(uiThreadMessageHandler, loginRequest, registerRequest, serverHostVal, serverPortVal);
+                RegisterTask task = new RegisterTask(uiThreadMessageHandler, registerRequest, serverHostVal, serverPortVal);
                 ExecutorService executor = Executors.newSingleThreadExecutor();
                 executor.submit(task);
-
-                if (cache.isCurrentSuccess()) {
-                    Toast.makeText(getActivity(),  firstNameInput.getText().toString() + " " + lastNameInput.getText().toString(), Toast.LENGTH_LONG).show();
-                }
-                else {
-                    Toast.makeText(getActivity(),  "Error in registering user", Toast.LENGTH_LONG).show();
-                }
-
             }
 
         });
@@ -164,7 +143,6 @@ public class LoginFragment extends Fragment {
         TextWatcher textWatcher = new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
@@ -183,7 +161,6 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void afterTextChanged(Editable editable) {
-
             }
         };
 

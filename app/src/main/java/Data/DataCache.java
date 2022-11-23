@@ -1,16 +1,15 @@
 package Data;
 
-
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import model.Event;
 import model.Person;
 
 public class DataCache {
 
-    private static DataCache instance = new DataCache();
+    private static final DataCache instance = new DataCache();
 
     public static DataCache getInstance() {
         return instance;
@@ -19,20 +18,26 @@ public class DataCache {
     private DataCache() {
     }
 
-    private Map<String, Person> people;
-    private Map<String, Event> events;
-    private Map<String, List<Event>> personEvents;
-    private Set<String> paternalAncestors;
-    private Set<String> maternalAncestors;
+    private final Map<String, Person> people = new HashMap<>();
+    private final Map<String, Event> events = new HashMap<>();
     private String currentAuthToken;
-    private boolean currentSuccess;
 
-    public boolean isCurrentSuccess() {
-        return currentSuccess;
+    private String rootPersonID;
+
+    public Map<String, Person> getPeople() {
+        return people;
     }
 
-    public void setCurrentSuccess(boolean currentSuccess) {
-        this.currentSuccess = currentSuccess;
+    public Map<String, Event> getEvents() {
+        return events;
+    }
+
+    public String getRootPersonID() {
+        return rootPersonID;
+    }
+
+    public void setRootPersonID(String rootPersonID) {
+        this.rootPersonID = rootPersonID;
     }
 
     public String getCurrentAuthToken() {
