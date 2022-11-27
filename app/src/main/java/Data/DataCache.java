@@ -20,6 +20,7 @@ public class DataCache {
 
     private final Map<String, Person> people = new HashMap<>();
     private final Map<String, Event> events = new HashMap<>();
+    private final Map<String, List<Person>> personList = new HashMap<>();
     private String currentAuthToken;
 
     private String rootPersonID;

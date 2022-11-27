@@ -26,6 +26,16 @@ import request.RegisterRequest;
 
 public class LoginFragment extends Fragment {
 
+    private Listener listener;
+
+    public interface Listener {
+        void notifyDone();
+    }
+
+    public void registerListener(Listener listener) {
+        this.listener = listener;
+    }
+
     public static final String SUCCESS_KEY = "SUCCESS";
     static private final DataCache cache = DataCache.getInstance();
     private String gender;
@@ -85,7 +95,10 @@ public class LoginFragment extends Fragment {
                         if (success) {
                             String firstName = cache.getPeople().get(cache.getRootPersonID()).getFirstName();
                             String lastName = cache.getPeople().get(cache.getRootPersonID()).getLastName();
-                            Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
+                            // Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
+                            if (listener != null) {
+                                listener.notifyDone();
+                            }
                         }
                         else {
                             Toast.makeText(getActivity(),  "Error in logging user in", Toast.LENGTH_LONG).show();
@@ -125,7 +138,10 @@ public class LoginFragment extends Fragment {
                         if (success) {
                             String firstName = cache.getPeople().get(cache.getRootPersonID()).getFirstName();
                             String lastName = cache.getPeople().get(cache.getRootPersonID()).getLastName();
-                            Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
+                            // Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
+                            if (listener != null) {
+                                listener.notifyDone();
+                            }
                         }
                         else {
                             Toast.makeText(getActivity(),  "Error in registering user", Toast.LENGTH_LONG).show();
