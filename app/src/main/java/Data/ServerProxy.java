@@ -37,11 +37,12 @@ public class ServerProxy  {
             // Connect to the server and send the HTTP request
             http.connect();
 
-
             if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
                 EventResult eventResult = gson.fromJson(respData, EventResult.class);
+                cache.getEvents().clear();
+                cache.setEventList(Arrays.asList(eventResult.getData()));
                 cache.setEvents(Arrays.asList(eventResult.getData()));
             }
             else {
@@ -77,6 +78,8 @@ public class ServerProxy  {
                 InputStream respBody = http.getInputStream();
                 String respData = readString(respBody);
                 PersonResult personResult = gson.fromJson(respData, PersonResult.class);
+                cache.getPeople().clear();
+                cache.setPersonList(Arrays.asList(personResult.getData()));
                 cache.setPeople(Arrays.asList(personResult.getData()));
             }
             else {
