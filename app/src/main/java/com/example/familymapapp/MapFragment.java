@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -60,6 +61,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map.setOnMapLoadedCallback(this);
         setUsedColors();
 
+        Marker marker;
+
         for (String eventString : cache.getEvents().keySet()) {
             Event event = cache.getEvents().get(eventString);
             LatLng newCity = new LatLng(event.getLatitude(), event.getLongitude());
@@ -85,6 +88,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                         if (Boolean.FALSE.equals(usedColors.get(color))) {
                             colorType = color;
                             setColorUsed(color, true);
+                            break;
                         }
                     }
                     if (colorType == BitmapDescriptorFactory.HUE_RED) {
@@ -94,10 +98,19 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     googleColor = colorType;
                 }
             }
-            Marker marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", " + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
+            marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", " + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
             assert marker != null;
+
             marker.setTag(event);
         }
+
+        map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(@NonNull Marker marker) {
+                eventInfo((Event) marker.getTag());
+                return false;
+            }
+        });
 
     }
 
@@ -110,7 +123,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         usedColors.put(color, value);
     }
 
-    public void setUsedColors() {
+    private void setUsedColors() {
         usedColors.put(BitmapDescriptorFactory.HUE_AZURE, false);
         usedColors.put(BitmapDescriptorFactory.HUE_ORANGE, false);
         usedColors.put(BitmapDescriptorFactory.HUE_CYAN, false);
@@ -118,6 +131,45 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         usedColors.put(BitmapDescriptorFactory.HUE_ROSE, false);
         usedColors.put(BitmapDescriptorFactory.HUE_VIOLET, false);
         usedColors.put(BitmapDescriptorFactory.HUE_YELLOW, false);
+    }
+
+    private void eventInfo(Event event) {
+        // here I could set up the info for the selected event
+        // then check what settings are enabled
+        // then call respective functions for each type of line
+        // then they each call addLine
+
+        // make sure to clear poly-lines each time
+
+    }
+
+    private void addLine(Event startEvent, Event endEvent, float googleColor, float thickness) {
+        LatLng startCity = new LatLng(startEvent.getLatitude(), startEvent.getLongitude());
+        LatLng endCity = new LatLng(endEvent.getLatitude(), endEvent.getLongitude());
+
+        PolylineOptions options = new PolylineOptions()
+                .add(startCity)
+                .add(endCity)
+                .color((int) googleColor)
+                .width(thickness);
+        this.map.addPolyline(options);
+    }
+
+
+    private void makeChronologyLines() {
+
+    }
+
+    private void makeSpouseLines() {
+
+    }
+
+    private void makeFamilyLines() {
+
+    }
+
+    private void setMarkers() {
+
     }
 
 
