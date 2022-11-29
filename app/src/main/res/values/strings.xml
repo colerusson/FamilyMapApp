@@ -12,7 +12,8 @@
     <string name="registerButton">REGISTER</string>
     <string name="radioButtonMale">Male</string>
     <string name="radioButtonFemale">Female</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_maps_example">MapsActivityExample</string>
+    <string name="click_on_a_marker_to_see_event">Click on a marker to see event</string>
+    <string name="details">details</string>
 </resources>

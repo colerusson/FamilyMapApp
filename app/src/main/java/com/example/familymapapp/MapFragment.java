@@ -94,7 +94,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     googleColor = colorType;
                 }
             }
-            Marker marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getEventType() + " in " + event.getCity() + ", " + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
+            Marker marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", " + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
             assert marker != null;
             marker.setTag(event);
         }
