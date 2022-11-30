@@ -24,8 +24,7 @@
             android:id="@+id/icon"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:gravity="center"
-            app:drawableLeftCompat="@drawable/ic_baseline_man_24" />
+            android:gravity="center_vertical"/>
 
         <LinearLayout
             android:layout_width="wrap_content"

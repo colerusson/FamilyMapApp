@@ -40,10 +40,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     static private final DataCache cache = DataCache.getInstance();
     private final Map<String, Float> unknownEvents = new HashMap<>();
     private final Map<Float, Boolean> usedColors = new HashMap<>();
-    private List<Polyline> polyLines = new ArrayList<>();
+    private final List<Polyline> polyLines = new ArrayList<>();
 
     private TextView topText;
     private TextView bottomText;
+    private TextView icon;
     private Event selectedEvent = null;
 
     public MapFragment() {
@@ -68,10 +69,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         topText = view.findViewById(R.id.topText);
         bottomText = view.findViewById(R.id.bottomText);
+        icon = view.findViewById(R.id.icon);
 
         if (selectedEvent == null) {
             topText.setText(getResources().getString(R.string.click_on_a_marker_to_see_event));
             bottomText.setText(getResources().getString(R.string.details));
+            icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_android_24, 0, 0, 0);
         }
         else {
             String firstName = Objects.requireNonNull(cache.getPeople().get(selectedEvent.getPersonID())).getFirstName();
@@ -82,6 +85,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             int year = selectedEvent.getYear();
             topText.setText(getString(R.string.eventUser, firstName, lastName));
             bottomText.setText(getString(R.string.eventDetails, eventType, city, country, year));
+            String gender = Objects.requireNonNull(cache.getPeople().get(selectedEvent.getPersonID())).getGender();
+            if (Objects.equals(gender, "f")) {
+                icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_woman_24, 0, 0, 0);
+            }
+            else if (Objects.equals(gender, "m")) {
+                icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_man_24, 0, 0, 0);
+            }
         }
 
         LinearLayout layout = view.findViewById(R.id.eventLayout);
@@ -143,7 +153,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     googleColor = colorType;
                 }
             }
-            marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", " + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
+            marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", "
+                    + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
             assert marker != null;
 
             marker.setTag(event);
@@ -178,14 +189,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         topText.setText(getString(R.string.eventUser, firstName, lastName));
         bottomText.setText(getString(R.string.eventDetails, eventType, city, country, year));
+        String gender = Objects.requireNonNull(cache.getPeople().get(event.getPersonID())).getGender();
+        if (Objects.equals(gender, "f")) {
+            icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_woman_24, 0, 0, 0);
+        }
+        else if (Objects.equals(gender, "m")) {
+            icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_man_24, 0, 0, 0);
+        }
 
-        //makeChronologyLines(personID, event);
+        makeChronologyLines(personID);
         makeSpouseLines(personID, event);
-        //makeFamilyLines(personID, event);
+        makeFamilyLines(personID, event, 12);
     }
 
-    private void makeChronologyLines(String personID, Event rootEvent) {
-
+    private void makeChronologyLines(String personID) {
+        List<Event> events = cache.getEventListForPerson(personID);
+        if (events != null && events.size() > 0) {
+            sortEvents(events);
+        }
+        for (int i = 0; i < Objects.requireNonNull(events).size() - 1; ++i) {
+            Event startEvent = events.get(i);
+            Event endEvent = events.get(i + 1);
+            addLine(startEvent, endEvent, Color.BLUE, 10);
+        }
     }
 
     private void makeSpouseLines(String personID, Event rootEvent) {
@@ -205,8 +231,34 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
     }
 
-    private void makeFamilyLines(String personID, Event rootEvent) {
-
+    private void makeFamilyLines(String personID, Event rootEvent, float width) {
+        float divisor = 2;
+        if (Objects.requireNonNull(cache.getPeople().get(personID)).getFatherID() != null) {
+            String fatherID = Objects.requireNonNull(cache.getPeople().get(personID)).getFatherID();
+            List<Event> fatherEvents = cache.getEventListForPerson(fatherID);
+            if (fatherEvents != null) {
+                if (fatherEvents.size() > 0) {
+                    Event fatherEvent = getFirstEvent(fatherEvents);
+                    if (fatherEvent != null) {
+                        addLine(rootEvent, fatherEvent, Color.GREEN, width);
+                        makeFamilyLines(fatherID, fatherEvent, width / divisor);
+                    }
+                }
+            }
+        }
+        if (Objects.requireNonNull(cache.getPeople().get(personID)).getMotherID() != null) {
+            String motherID = Objects.requireNonNull(cache.getPeople().get(personID)).getMotherID();
+            List<Event> motherEvents = cache.getEventListForPerson(motherID);
+            if (motherEvents != null) {
+                if (motherEvents.size() > 0) {
+                    Event motherEvent = getFirstEvent(motherEvents);
+                    if (motherEvent != null) {
+                        addLine(rootEvent, motherEvent, Color.GREEN, width);
+                        makeFamilyLines(motherID, motherEvent, width / divisor);
+                    }
+                }
+            }
+        }
     }
 
     private void addLine(Event startEvent, Event endEvent, int googleColor, float thickness) {
@@ -231,6 +283,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         }
         return firstEvent;
+    }
+
+    private void sortEvents(List<Event> events) {
+        for (int i = 0; i < events.size() - 1; ++i) {
+            if (events.get(i).getYear() > events.get(i + 1).getYear()) {
+                Event temp = events.get(i);
+                events.set(i, events.get(i + 1));
+                events.set(i + 1, temp);
+            }
+            else if (Objects.equals(events.get(i).getYear(), events.get(i + 1).getYear())) {
+                String event1 = events.get(i).getEventType().toLowerCase();
+                String event2 = events.get(i + 1).getEventType().toLowerCase();
+                if (event1.compareTo(event2) > 0) {
+                    Event temp = events.get(i);
+                    events.set(i, events.get(i + 1));
+                    events.set(i + 1, temp);
+                }
+            }
+        }
     }
 
     private void personSelected(String name) {
