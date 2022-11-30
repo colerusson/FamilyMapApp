@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.Objects;
@@ -182,7 +181,9 @@ public class PersonActivity extends AppCompatActivity {
             eventView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(PersonActivity.this, "Event Selected", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(PersonActivity.this, EventActivity.class);
+                    intent.putExtra(EventActivity.EVENT_ID, events.get(childPosition).getEventID());
+                    startActivity(intent);
                 }
             });
         }
@@ -205,7 +206,9 @@ public class PersonActivity extends AppCompatActivity {
             personView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(PersonActivity.this, "Person Selected", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(PersonActivity.this, PersonActivity.class);
+                    intent.putExtra(PersonActivity.PERSON_ID, family.get(childPosition).getPersonID());
+                    startActivity(intent);
                 }
             });
         }

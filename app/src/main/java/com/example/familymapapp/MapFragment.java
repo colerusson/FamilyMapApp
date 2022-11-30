@@ -12,8 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -162,6 +162,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             assert marker != null;
 
             marker.setTag(event);
+
+            if (selectedEvent != null) {
+                LatLng latLng = new LatLng(selectedEvent.getLatitude(), selectedEvent.getLongitude());
+                map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
         }
 
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {

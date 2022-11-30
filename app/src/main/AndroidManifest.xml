@@ -43,7 +43,7 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
-            android:label="Settings"
+            android:label="Family Map: Settings"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -58,7 +58,7 @@
         </activity>
         <activity
             android:name=".PersonActivity"
-            android:label="Person Info"
+            android:label="Family Map: Person Details"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
