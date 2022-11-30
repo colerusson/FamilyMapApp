@@ -14,10 +14,10 @@ public class EventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_event);
 
         FragmentManager fragmentManager = this.getSupportFragmentManager();
-        Fragment fragment = new MapFragment();
+        Fragment fragment = new MapFragment(); // TODO: pass in the event selected in the person to use here
 
-        fragmentManager.beginTransaction() // TODO: pass in the event selected in the person to use here
-                .replace(R.id.fragmentFrameLayout, fragment)
+        fragmentManager.beginTransaction()
+                .add(R.id.eventFragmentFrameLayout, fragment)
                 .commit();
     }
 }

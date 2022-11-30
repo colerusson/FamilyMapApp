@@ -1,7 +1,9 @@
 <resources>
-    <string name="app_name">com.example.familymapapp</string>
+    <string name="app_name">Family Map</string>
     <string name="firstName">First Name:</string>
+    <string name="firstNamePerson">First Name</string>
     <string name="lastName">Last Name:</string>
+    <string name="lastNamePerson">Last Name</string>
     <string name="serverHost">Server Host:</string>
     <string name="serverPort">Server Port:</string>
     <string name="password">Password:</string>
@@ -19,4 +21,7 @@
     <string name="icon">IconHere</string>
     <string name="eventUser">%1$s %2$s</string>
     <string name="eventDetails">%1$s: %2$s, %3$s (%4$d)</string>
+    <string name="genderPerson">Gender</string>
+    <string name="eventTitle">Life Events</string>
+    <string name="familyTitle">Family</string>
 </resources>

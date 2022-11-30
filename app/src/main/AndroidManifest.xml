@@ -43,6 +43,7 @@
         </activity>
         <activity
             android:name=".SettingsActivity"
+            android:label="Settings"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"
@@ -57,6 +58,7 @@
         </activity>
         <activity
             android:name=".PersonActivity"
+            android:label="Person Info"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

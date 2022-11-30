@@ -11,16 +11,16 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/firstNameLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Cole"
             android:textStyle="bold"
-            android:textSize="17sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="First Name"
-            android:textSize="15sp"/>
+            android:text="@string/firstNamePerson"
+            android:textSize="16sp"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"
@@ -33,16 +33,16 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/lastNameLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Russon"
             android:textStyle="bold"
-            android:textSize="17sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Last Name"
-            android:textSize="15sp"/>
+            android:text="@string/lastNamePerson"
+            android:textSize="16sp"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"
@@ -55,22 +55,27 @@
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/genderLine"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Male"
             android:textStyle="bold"
-            android:textSize="17sp"/>
+            android:textSize="18sp"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Gender"
-            android:textSize="15sp"/>
+            android:text="@string/genderPerson"
+            android:textSize="16sp"/>
         <View
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:background="@android:color/darker_gray"/>
     </LinearLayout>
 
-
+    <ExpandableListView
+        android:id="@+id/expandableListView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginRight="8dp"
+        android:layout_marginLeft="8dp"/>
 
 </LinearLayout>

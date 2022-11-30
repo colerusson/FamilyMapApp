@@ -1,5 +1,6 @@
 package com.example.familymapapp;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 
@@ -45,7 +46,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private TextView topText;
     private TextView bottomText;
     private TextView icon;
-    private Event selectedEvent = null;
+    private Event currentEvent;
+    private Event selectedEvent;
 
     public MapFragment() {
         // Required empty public constructor
@@ -98,7 +100,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                personSelected((String) topText.getText());
+                if (currentEvent != null) {
+                    personSelected(currentEvent);
+                }
             }
         });
 
@@ -163,6 +167,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(@NonNull Marker marker) {
+                currentEvent = (Event) marker.getTag();
                 for (Polyline line : polyLines) {
                     line.remove();
                 }
@@ -304,13 +309,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         }
     }
 
-    private void personSelected(String name) {
-        if (!name.equals(getString(R.string.click_on_a_marker_to_see_event))) {
-            Toast.makeText(getActivity(),  "person selected", Toast.LENGTH_LONG).show();
-
-
-
-        }
+    private void personSelected(Event event) {
+        Intent intent = new Intent(getActivity(), PersonActivity.class);
+        intent.putExtra(PersonActivity.PERSON_ID, event.getPersonID());
+        startActivity(intent);
     }
 
     private void setColorUsed(Float color) {
