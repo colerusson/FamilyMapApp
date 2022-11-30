@@ -307,6 +307,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private void personSelected(String name) {
         if (!name.equals(getString(R.string.click_on_a_marker_to_see_event))) {
             Toast.makeText(getActivity(),  "person selected", Toast.LENGTH_LONG).show();
+
+
+
         }
     }
 
