@@ -16,4 +16,7 @@
     <string name="title_activity_maps_example">MapsActivityExample</string>
     <string name="click_on_a_marker_to_see_event">Click on a marker to see event</string>
     <string name="details">details</string>
+    <string name="icon">IconHere</string>
+    <string name="eventUser">%1$s %2$s</string>
+    <string name="eventDetails">%1$s: %2$s, %3$s (%4$d)</string>
 </resources>

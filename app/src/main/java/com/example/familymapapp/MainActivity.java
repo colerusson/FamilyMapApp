@@ -5,8 +5,12 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
 
+import Data.DataCache;
+
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener {
+
+    static private final DataCache cache = DataCache.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

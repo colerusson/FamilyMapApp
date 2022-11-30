@@ -32,6 +32,7 @@ public class LoginTask implements Runnable {
         if (success) {
             serverProxy.getEventList(serverHost, serverPort, loginResult.getAuthtoken());
             serverProxy.getPersonList(serverHost, serverPort, loginResult.getAuthtoken());
+            serverProxy.setLists();
         }
 
         sendMessage(success);

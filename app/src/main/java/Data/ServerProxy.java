@@ -22,6 +22,11 @@ public class ServerProxy  {
 
     static private final DataCache cache = DataCache.getInstance();
 
+    public void setLists() {
+        cache.setEventListForPerson();
+        cache.setPeopleListForPerson();
+    }
+
     public void getEventList(String serverHost, String serverPort, String authToken) {
 
         try {

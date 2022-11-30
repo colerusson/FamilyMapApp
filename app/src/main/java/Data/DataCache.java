@@ -1,5 +1,7 @@
 package Data;
 
+import androidx.fragment.app.Fragment;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,11 +25,12 @@ public class DataCache {
     private final Map<String, Event> events = new HashMap<>();
     private List<Person> personList = new ArrayList<>();
     private List<Event> eventList = new ArrayList<>();
-    private Map<String, List<Person>> peopleListForPerson = new HashMap<>();
-    private Map<String, List<Event>> eventListForPerson = new HashMap<>();
+    private final Map<String, List<Person>> peopleListForPerson = new HashMap<>();
+    private final Map<String, List<Event>> eventListForPerson = new HashMap<>();
     private String currentAuthToken;
     private String rootPersonID;
     private final List<String> authTokenList = new ArrayList<>();
+
 
     public Map<String, Person> getPeople() {
         return people;
@@ -65,20 +68,45 @@ public class DataCache {
         this.eventList = eventList;
     }
 
-    public Map<String, List<Person>> getPeopleListForPerson() {
-        return peopleListForPerson;
+    public List<Person> getPeopleListForPerson(String personID) {
+        return peopleListForPerson.get(personID);
     }
 
-    public void setPeopleListForPerson(Map<String, List<Person>> peopleListForPerson) {
-        this.peopleListForPerson = peopleListForPerson;
+    public void setPeopleListForPerson() {
+        for (Person person : personList) {
+            List<Person> listToAdd = new ArrayList<>();
+            String spouseID = person.getSpouseID();
+            String fatherID = person.getFatherID();
+            String motherID = person.getMotherID();
+            if (spouseID != null) {
+                listToAdd.add(getPeople().get(spouseID));
+            }
+            if (fatherID != null) {
+                listToAdd.add(getPeople().get(fatherID));
+            }
+            if (motherID != null) {
+                listToAdd.add(getPeople().get(motherID));
+            }
+            peopleListForPerson.put(person.getPersonID(), listToAdd);
+        }
     }
 
-    public Map<String, List<Event>> getEventListForPerson() {
-        return eventListForPerson;
+    public List<Event> getEventListForPerson(String personID) {
+        return eventListForPerson.get(personID);
     }
 
-    public void setEventListForPerson(Map<String, List<Event>> eventListForPerson) {
-        this.eventListForPerson = eventListForPerson;
+    public void setEventListForPerson() {
+        for (Person person : personList) {
+            List<Event> listToAdd = new ArrayList<>();
+            String personID = person.getPersonID();
+            for (Event eventToAdd : eventList) {
+                String eventPersonID = eventToAdd.getPersonID();
+                if (personID.equals(eventPersonID)) {
+                    listToAdd.add(eventToAdd);
+                }
+            }
+            eventListForPerson.put(person.getPersonID(), listToAdd);
+        }
     }
 
     public List<String> getAuthTokenList() {
@@ -102,6 +130,5 @@ public class DataCache {
     }
 
     public void setCurrentAuthToken(String currentAuthToken) { this.currentAuthToken = currentAuthToken; }
-
 
 }

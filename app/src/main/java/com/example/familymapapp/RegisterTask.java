@@ -33,6 +33,7 @@ public class RegisterTask implements Runnable {
         if (success) {
             serverProxy.getEventList(serverHost, serverPort, registerResult.getAuthtoken());
             serverProxy.getPersonList(serverHost, serverPort, registerResult.getAuthtoken());
+            serverProxy.setLists();
         }
 
         sendMessage(success);
