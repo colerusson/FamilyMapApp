@@ -22,6 +22,7 @@ public class PersonActivity extends AppCompatActivity {
 
     static private final DataCache cache = DataCache.getInstance();
     public static final String PERSON_ID = "personID";
+    private String rootPersonID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +31,7 @@ public class PersonActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         String personID = intent.getStringExtra(PERSON_ID);
+        rootPersonID = personID;
         Person person = cache.getPeople().get(personID);
         assert person != null;
         String personFirstName = person.getFirstName();
@@ -44,6 +46,8 @@ public class PersonActivity extends AppCompatActivity {
 
         List<Person> family = cache.getPeopleListForPerson(personID);
         List<Event> events = cache.getEventListForPerson(personID);
+
+        sortEvents(events);
 
         TextView firstName = findViewById(R.id.firstNameLine);
         TextView lastName = findViewById(R.id.lastNameLine);
@@ -171,7 +175,17 @@ public class PersonActivity extends AppCompatActivity {
             iconView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24, 0, 0, 0);
 
             TextView eventName = eventView.findViewById(R.id.eventName);
-            eventName.setText(getString(R.string.eventDetails, events.get(childPosition).getEventType(), events.get(childPosition).getCity(),
+            String eventType = events.get(childPosition).getEventType();
+            if (eventType.equalsIgnoreCase("birth")) {
+                eventType = "BIRTH";
+            }
+            else if (eventType.equalsIgnoreCase("death")) {
+                eventType = "DEATH";
+            }
+            else if (eventType.equalsIgnoreCase("marriage")) {
+                eventType = "MARRIAGE";
+            }
+            eventName.setText(getString(R.string.eventDetails, eventType, events.get(childPosition).getCity(),
                     events.get(childPosition).getCountry(), events.get(childPosition).getYear()));
 
             TextView eventPerson = eventView.findViewById(R.id.eventPerson);
@@ -201,7 +215,8 @@ public class PersonActivity extends AppCompatActivity {
             personName.setText(getString(R.string.eventUser, family.get(childPosition).getFirstName(), family.get(childPosition).getLastName()));
 
             TextView personRelationship = personView.findViewById(R.id.personRelationship);
-            personRelationship.setText("Add Relationship");
+            String relationship = family.get(childPosition).getPersonID();
+            personRelationship.setText(getRelationshipType(relationship));
 
             personView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -218,5 +233,43 @@ public class PersonActivity extends AppCompatActivity {
             return true;
         }
     }
+
+    private String getRelationshipType(String relationshipPerson) {
+        String relationship = null;
+        Person rootPerson = cache.getPeople().get(rootPersonID);
+        assert rootPerson != null;
+        if (rootPerson.getMotherID() != null) {
+            if (rootPerson.getMotherID().equals(relationshipPerson)) {
+                relationship = "Mother";
+                return relationship;
+            }
+        }
+        if (rootPerson.getFatherID() != null) {
+            if (rootPerson.getFatherID().equals(relationshipPerson)) {
+                relationship = "Father";
+                return relationship;
+            }
+        }
+        if (rootPerson.getSpouseID() != null) {
+            if (rootPerson.getSpouseID().equals(relationshipPerson)) {
+                relationship = "Spouse";
+                return relationship;
+            }
+        }
+        relationship = "Child";
+        return relationship;
+    }
+
+    private void sortEvents(List<Event> events) {
+        for (int i = 0; i < events.size() - 1; ++i) {
+            Event firstEvent = events.get(i);
+            Event secondEvent = events.get(i + 1);
+            if (firstEvent.getYear() > secondEvent.getYear()) {
+                events.set(i, secondEvent);
+                events.set(i + 1, firstEvent);
+            }
+        }
+    }
+
 
 }

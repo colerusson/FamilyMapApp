@@ -126,14 +126,14 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             assert event != null;
             LatLng newCity = new LatLng(event.getLatitude(), event.getLongitude());
             float googleColor;
-            if (Objects.equals(event.getEventType(), "birth")) {
+            if (Objects.equals(event.getEventType().toLowerCase(), "birth")) {
                 googleColor = BitmapDescriptorFactory.HUE_RED;
             }
-            else if (Objects.equals(event.getEventType(), "death")) {
+            else if (Objects.equals(event.getEventType().toLowerCase(), "death")) {
                 googleColor = BitmapDescriptorFactory.HUE_BLUE;
 
             }
-            else if (Objects.equals(event.getEventType(), "marriage")) {
+            else if (Objects.equals(event.getEventType().toLowerCase(), "marriage")) {
                 googleColor = BitmapDescriptorFactory.HUE_GREEN;
 
             }

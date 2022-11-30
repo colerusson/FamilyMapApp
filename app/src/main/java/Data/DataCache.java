@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import model.Event;
 import model.Person;
@@ -86,6 +87,20 @@ public class DataCache {
             }
             if (motherID != null) {
                 listToAdd.add(getPeople().get(motherID));
+            }
+            for (Person personFamily : personList) {
+                if (!Objects.equals(personFamily.getPersonID(), person.getPersonID())) {
+                    if (personFamily.getFatherID() != null) {
+                        if (personFamily.getFatherID().equals(person.getPersonID())) {
+                            listToAdd.add(personFamily);
+                        }
+                    }
+                    if (personFamily.getMotherID() != null) {
+                        if (personFamily.getMotherID().equals(person.getPersonID())) {
+                            listToAdd.add(personFamily);
+                        }
+                    }
+                }
             }
             peopleListForPerson.put(person.getPersonID(), listToAdd);
         }
