@@ -42,6 +42,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private final Map<String, Float> unknownEvents = new HashMap<>();
     private final Map<Float, Boolean> usedColors = new HashMap<>();
     private final List<Polyline> polyLines = new ArrayList<>();
+    private final List<Event> currentMarkers = new ArrayList<>();
 
     private TextView topText;
     private TextView bottomText;
@@ -68,6 +69,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+
+        unknownEvents.clear();
+        usedColors.clear();
 
         topText = view.findViewById(R.id.topText);
         bottomText = view.findViewById(R.id.bottomText);
@@ -118,14 +122,26 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map = googleMap;
         map.setOnMapLoadedCallback(this);
         setUsedColors();
-
         Marker marker;
 
-        for (String eventString : cache.getEvents().keySet()) {
-            Event event = cache.getEvents().get(eventString);
-            assert event != null;
+        List<Event> usedEvents = cache.getEventList();
+        if (!cache.isFatherSide()) {
+            if (!cache.isMotherSide()) {
+                usedEvents = cache.getUserSpouseEvents();
+            }
+            else {
+                usedEvents = cache.getMaternalEvents();
+            }
+        }
+        else if (!cache.isMotherSide()) {
+            usedEvents = cache.getPaternalEvents();
+        }
+
+        for (Event event : usedEvents) {
+            String personID = event.getPersonID();
+            Person person = cache.getPeople().get(personID);
             LatLng newCity = new LatLng(event.getLatitude(), event.getLongitude());
-            float googleColor;
+            float googleColor = 0;
             if (Objects.equals(event.getEventType().toLowerCase(), "birth")) {
                 googleColor = BitmapDescriptorFactory.HUE_RED;
             }
@@ -139,7 +155,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
             else {
                 if (unknownEvents.containsKey(event.getEventType().toLowerCase())) {
-                    googleColor = unknownEvents.get(event.getEventType());
+                    if (unknownEvents.get(event.getEventType().toLowerCase()) != null) {
+                        googleColor = unknownEvents.get(event.getEventType().toLowerCase());
+                    }
                 }
                 else {
                     Float colorType = BitmapDescriptorFactory.HUE_RED;
@@ -157,11 +175,25 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     googleColor = colorType;
                 }
             }
-            marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", "
-                    + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
-            assert marker != null;
-
-            marker.setTag(event);
+            assert person != null;
+            if (person.getGender().equals("m")) {
+                if (cache.isMaleEvents()) {
+                    marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", "
+                            + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
+                    assert marker != null;
+                    marker.setTag(event);
+                    currentMarkers.add(event);
+                }
+            }
+            else if (person.getGender().equals("f")) {
+                if (cache.isFemaleEvents()) {
+                    marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", "
+                            + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
+                    assert marker != null;
+                    marker.setTag(event);
+                    currentMarkers.add(event);
+                }
+            }
 
             if (selectedEvent != null) {
                 LatLng latLng = new LatLng(selectedEvent.getLatitude(), selectedEvent.getLongitude());
@@ -207,9 +239,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_man_24, 0, 0, 0);
         }
 
-        makeChronologyLines(personID);
-        makeSpouseLines(personID, event);
-        makeFamilyLines(personID, event, 12);
+        if (cache.isLifeStoryLines()) {
+            makeChronologyLines(personID);
+        }
+        if (cache.isSpouseLines()) {
+            makeSpouseLines(personID, event);
+        }
+        if (cache.isFamilyTreeLines()) {
+            makeFamilyLines(personID, event, 12);
+        }
+
     }
 
     private void makeChronologyLines(String personID) {
@@ -272,15 +311,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     private void addLine(Event startEvent, Event endEvent, int googleColor, float thickness) {
-        LatLng startCity = new LatLng(startEvent.getLatitude(), startEvent.getLongitude());
-        LatLng endCity = new LatLng(endEvent.getLatitude(), endEvent.getLongitude());
+        if (currentMarkers.contains(endEvent) && currentMarkers.contains(startEvent)) {
+            LatLng startCity = new LatLng(startEvent.getLatitude(), startEvent.getLongitude());
+            LatLng endCity = new LatLng(endEvent.getLatitude(), endEvent.getLongitude());
 
-        PolylineOptions options = new PolylineOptions()
-                .add(startCity)
-                .add(endCity)
-                .color(googleColor)
-                .width(thickness);
-        polyLines.add(this.map.addPolyline(options));
+            PolylineOptions options = new PolylineOptions()
+                    .add(startCity)
+                    .add(endCity)
+                    .color(googleColor)
+                    .width(thickness);
+            polyLines.add(this.map.addPolyline(options));
+        }
     }
 
     private Event getFirstEvent(List<Event> events) {

@@ -36,6 +36,7 @@
 
         <activity
             android:name=".SearchActivity"
+            android:label="Family Map: Search"
             android:exported="false">
             <meta-data
                 android:name="android.app.lib_name"

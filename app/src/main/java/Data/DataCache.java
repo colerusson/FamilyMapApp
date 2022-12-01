@@ -1,7 +1,5 @@
 package Data;
 
-import androidx.fragment.app.Fragment;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +20,15 @@ public class DataCache {
     private DataCache() {
     }
 
+    // Settings for user
+    private boolean lifeStoryLines;
+    private boolean familyTreeLines;
+    private boolean spouseLines;
+    private boolean fatherSide;
+    private boolean motherSide;
+    private boolean maleEvents;
+    private boolean femaleEvents;
+
     private final Map<String, Person> people = new HashMap<>();
     private final Map<String, Event> events = new HashMap<>();
     private List<Person> personList = new ArrayList<>();
@@ -31,7 +38,101 @@ public class DataCache {
     private String currentAuthToken;
     private String rootPersonID;
     private final List<String> authTokenList = new ArrayList<>();
+    private final List<Event> maternalEvents = new ArrayList<>();
+    private final List<Event> paternalEvents = new ArrayList<>();
+    private final List<Event> userSpouseEvents = new ArrayList<>();
 
+    public void setUserSpouseEvents(String personID) {
+        List<Event> eventsUser = eventListForPerson.get(personID);
+        assert eventsUser != null;
+        Person person = people.get(personID);
+        assert person != null;
+        String spouseID = person.getSpouseID();
+        List<Event> eventsSpouse = eventListForPerson.get(spouseID);
+        userSpouseEvents.addAll(eventsUser);
+        assert eventsSpouse != null;
+        userSpouseEvents.addAll(eventsSpouse);
+    }
+
+    public List<Event> getUserSpouseEvents() {
+        return userSpouseEvents;
+    }
+
+    public List<Event> getMaternalEvents() {
+        return maternalEvents;
+    }
+
+    public List<Event> getPaternalEvents() {
+        return paternalEvents;
+    }
+
+    public void addPersonToFamilyEvents(String personID) {
+        List<Event> events = eventListForPerson.get(personID);
+        assert events != null;
+        maternalEvents.addAll(events);
+        paternalEvents.addAll(events);
+        Person person = people.get(personID);
+        assert person != null;
+        String spouseID = person.getSpouseID();
+        List<Event> eventsSpouse = eventListForPerson.get(spouseID);
+        assert eventsSpouse != null;
+        maternalEvents.addAll(eventsSpouse);
+        paternalEvents.addAll(eventsSpouse);
+    }
+
+    public void setMaternalEvents(String personID, int counter) {
+        Person person = people.get(personID);
+        assert person != null;
+        if (counter > 0) {
+            if (person.getFatherID() != null) {
+                String fatherID = Objects.requireNonNull(people.get(personID)).getFatherID();
+                List<Event> fatherEvents = eventListForPerson.get(fatherID);
+                if (fatherEvents != null) {
+                    if (fatherEvents.size() > 0) {
+                        maternalEvents.addAll(fatherEvents);
+                        setMaternalEvents(fatherID, counter + 1);
+                    }
+                }
+            }
+        }
+        if (person.getMotherID() != null) {
+            String motherID = Objects.requireNonNull(people.get(personID)).getMotherID();
+            List<Event> motherEvents = eventListForPerson.get(motherID);
+            if (motherEvents != null) {
+                if (motherEvents.size() > 0) {
+                    maternalEvents.addAll(motherEvents);
+                    setMaternalEvents(motherID, counter + 1);
+                }
+            }
+        }
+    }
+
+    public void setPaternalEvents(String personID, int counter) {
+        Person person = people.get(personID);
+        assert person != null;
+        if (person.getFatherID() != null) {
+            String fatherID = Objects.requireNonNull(people.get(personID)).getFatherID();
+            List<Event> fatherEvents = eventListForPerson.get(fatherID);
+            if (fatherEvents != null) {
+                if (fatherEvents.size() > 0) {
+                    paternalEvents.addAll(fatherEvents);
+                    setPaternalEvents(fatherID, counter + 1);
+                }
+            }
+        }
+        if (counter > 0) {
+            if (person.getMotherID() != null) {
+                String motherID = Objects.requireNonNull(people.get(personID)).getMotherID();
+                List<Event> motherEvents = eventListForPerson.get(motherID);
+                if (motherEvents != null) {
+                    if (motherEvents.size() > 0) {
+                        paternalEvents.addAll(motherEvents);
+                        setPaternalEvents(motherID, counter + 1);
+                    }
+                }
+            }
+        }
+    }
 
     public Map<String, Person> getPeople() {
         return people;
@@ -124,14 +225,6 @@ public class DataCache {
         }
     }
 
-    public List<String> getAuthTokenList() {
-        return authTokenList;
-    }
-
-    public void setAuthTokenList(String authToken) {
-        authTokenList.add(authToken);
-    }
-
     public String getRootPersonID() {
         return rootPersonID;
     }
@@ -140,10 +233,85 @@ public class DataCache {
         this.rootPersonID = rootPersonID;
     }
 
-    public String getCurrentAuthToken() {
-        return currentAuthToken;
+    public void setCurrentAuthToken(String currentAuthToken) { this.currentAuthToken = currentAuthToken; }
+
+    public boolean isLifeStoryLines() {
+        return lifeStoryLines;
     }
 
-    public void setCurrentAuthToken(String currentAuthToken) { this.currentAuthToken = currentAuthToken; }
+    public void setLifeStoryLines(boolean lifeStoryLines) {
+        this.lifeStoryLines = lifeStoryLines;
+    }
+
+    public boolean isFamilyTreeLines() {
+        return familyTreeLines;
+    }
+
+    public void setFamilyTreeLines(boolean familyTreeLines) {
+        this.familyTreeLines = familyTreeLines;
+    }
+
+    public boolean isSpouseLines() {
+        return spouseLines;
+    }
+
+    public void setSpouseLines(boolean spouseLines) {
+        this.spouseLines = spouseLines;
+    }
+
+    public boolean isFatherSide() {
+        return fatherSide;
+    }
+
+    public void setFatherSide(boolean fatherSide) {
+        this.fatherSide = fatherSide;
+    }
+
+    public boolean isMotherSide() {
+        return motherSide;
+    }
+
+    public void setMotherSide(boolean motherSide) {
+        this.motherSide = motherSide;
+    }
+
+    public boolean isMaleEvents() {
+        return maleEvents;
+    }
+
+    public void setMaleEvents(boolean maleEvents) {
+        this.maleEvents = maleEvents;
+    }
+
+    public boolean isFemaleEvents() {
+        return femaleEvents;
+    }
+
+    public void setFemaleEvents(boolean femaleEvents) {
+        this.femaleEvents = femaleEvents;
+    }
+
+    public void setSettingsTrue() {
+        setFatherSide(true);
+        setMotherSide(true);
+        setMaleEvents(true);
+        setFemaleEvents(true);
+        setLifeStoryLines(true);
+        setSpouseLines(true);
+        setFamilyTreeLines(true);
+    }
+
+    public void clear() {
+        setSettingsTrue();
+        people.clear();
+        events.clear();
+        personList.clear();
+        eventList.clear();
+        peopleListForPerson.clear();
+        eventListForPerson.clear();
+        currentAuthToken = null;
+        rootPersonID = null;
+        authTokenList.clear();
+    }
 
 }

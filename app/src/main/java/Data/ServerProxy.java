@@ -25,6 +25,10 @@ public class ServerProxy  {
     public void setLists() {
         cache.setEventListForPerson();
         cache.setPeopleListForPerson();
+        cache.addPersonToFamilyEvents(cache.getRootPersonID());
+        cache.setPaternalEvents(cache.getRootPersonID(), 0);
+        cache.setMaternalEvents(cache.getRootPersonID(), 0);
+        cache.setUserSpouseEvents(cache.getRootPersonID());
     }
 
     public void getEventList(String serverHost, String serverPort, String authToken) {
@@ -126,6 +130,7 @@ public class ServerProxy  {
                 RegisterResult registerResult = gson.fromJson(respData, RegisterResult.class);
                 cache.setCurrentAuthToken(registerResult.getAuthtoken());
                 cache.setRootPersonID(registerResult.getPersonID());
+                cache.setSettingsTrue();
                 return registerResult;
             }
             else {
@@ -170,6 +175,7 @@ public class ServerProxy  {
                 LoginResult loginResult = gson.fromJson(respData, LoginResult.class);
                 cache.setCurrentAuthToken(loginResult.getAuthtoken());
                 cache.setRootPersonID(loginResult.getPersonID());
+                cache.setSettingsTrue();
                 return loginResult;
             }
             else {
