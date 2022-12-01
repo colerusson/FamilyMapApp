@@ -22,6 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+        Intent intent = new Intent(this, MainActivity.class);
 
         Switch lifeStoryLines = findViewById(R.id.lifeLinesSwitch);
         Switch familyTreeLines = findViewById(R.id.familyLinesSwitch);
@@ -99,10 +100,9 @@ public class SettingsActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cache.clear();
-                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
+                cache.clear();
             }
         });
 
