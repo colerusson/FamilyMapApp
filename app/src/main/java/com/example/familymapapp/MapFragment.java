@@ -8,10 +8,14 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -50,6 +54,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private Event currentEvent;
     private Event selectedEvent;
 
+    private boolean isEvent;
+
     public MapFragment() {
         // Required empty public constructor
     }
@@ -68,6 +74,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
+        setHasOptionsMenu(true);
+
         View view = inflater.inflate(R.layout.fragment_map, container, false);
 
         unknownEvents.clear();
@@ -81,6 +89,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             topText.setText(getResources().getString(R.string.click_on_a_marker_to_see_event));
             bottomText.setText(getResources().getString(R.string.details));
             icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_android_24, 0, 0, 0);
+            isEvent = false;
         }
         else {
             String firstName = Objects.requireNonNull(cache.getPeople().get(selectedEvent.getPersonID())).getFirstName();
@@ -98,6 +107,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             else if (Objects.equals(gender, "m")) {
                 icon.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_man_24, 0, 0, 0);
             }
+
+            isEvent = true;
         }
 
         LinearLayout layout = view.findViewById(R.id.eventLayout);
@@ -198,6 +209,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             if (selectedEvent != null) {
                 LatLng latLng = new LatLng(selectedEvent.getLatitude(), selectedEvent.getLongitude());
                 map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                eventInfo(selectedEvent);
             }
         }
 
@@ -214,6 +226,11 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     private void eventInfo(Event event) {
@@ -373,6 +390,29 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         usedColors.put(BitmapDescriptorFactory.HUE_ROSE, false);
         usedColors.put(BitmapDescriptorFactory.HUE_VIOLET, false);
         usedColors.put(BitmapDescriptorFactory.HUE_YELLOW, false);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        if (!isEvent) {
+            inflater.inflate(R.menu.search_settings_menu, menu);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menu) {
+        switch (menu.getItemId()) {
+            case R.id.searchMenuItem:
+                Toast.makeText(getActivity(),  "You selected the search option", Toast.LENGTH_LONG).show();
+                return true;
+            case R.id.settingsMenuItem:
+                Intent intent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(menu);
+        }
     }
 
     @Override
