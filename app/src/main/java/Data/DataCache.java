@@ -36,20 +36,22 @@ public class DataCache {
     private List<Event> eventList = new ArrayList<>();
     private final Map<String, List<Person>> peopleListForPerson = new HashMap<>();
     private final Map<String, List<Event>> eventListForPerson = new HashMap<>();
-    private final List<Event> maternalEvents = new ArrayList<>();
-    private final List<Event> paternalEvents = new ArrayList<>();
-    private final List<Event> userSpouseEvents = new ArrayList<>();
+    private List<Event> maternalEvents = new ArrayList<>();
+    private List<Event> paternalEvents = new ArrayList<>();
+    private List<Event> userSpouseEvents = new ArrayList<>();
 
     public void setUserSpouseEvents(String personID) {
         List<Event> eventsUser = eventListForPerson.get(personID);
         assert eventsUser != null;
         Person person = people.get(personID);
         assert person != null;
-        String spouseID = person.getSpouseID();
-        List<Event> eventsSpouse = eventListForPerson.get(spouseID);
         userSpouseEvents.addAll(eventsUser);
-        assert eventsSpouse != null;
-        userSpouseEvents.addAll(eventsSpouse);
+        String spouseID = person.getSpouseID();
+        if (spouseID != null) {
+            List<Event> eventsSpouse = eventListForPerson.get(spouseID);
+            assert eventsSpouse != null;
+            userSpouseEvents.addAll(eventsSpouse);
+        }
     }
 
     public List<Event> getUserSpouseEvents() {
@@ -72,10 +74,12 @@ public class DataCache {
         Person person = people.get(personID);
         assert person != null;
         String spouseID = person.getSpouseID();
-        List<Event> eventsSpouse = eventListForPerson.get(spouseID);
-        assert eventsSpouse != null;
-        maternalEvents.addAll(eventsSpouse);
-        paternalEvents.addAll(eventsSpouse);
+        if (spouseID != null) {
+            List<Event> eventsSpouse = eventListForPerson.get(spouseID);
+            assert eventsSpouse != null;
+            maternalEvents.addAll(eventsSpouse);
+            paternalEvents.addAll(eventsSpouse);
+        }
     }
 
     public void setMaternalEvents(String personID, int counter) {
@@ -301,10 +305,13 @@ public class DataCache {
         setSettingsTrue();
         people.clear();
         events.clear();
-        personList.clear();
-        eventList.clear();
+        personList = new ArrayList<>();
+        eventList = new ArrayList<>();
         peopleListForPerson.clear();
         eventListForPerson.clear();
+        maternalEvents = new ArrayList<>();
+        paternalEvents = new ArrayList<>();
+        userSpouseEvents = new ArrayList<>();
         rootPersonID = null;
     }
 
