@@ -171,35 +171,73 @@ public class PersonActivity extends AppCompatActivity {
         }
 
         private void initializeEventView(View eventView, final int childPosition) {
-            TextView iconView = eventView.findViewById(R.id.iconEvent);
-            iconView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24, 0, 0, 0);
-
-            TextView eventName = eventView.findViewById(R.id.eventName);
             String eventType = events.get(childPosition).getEventType();
-            if (eventType.equalsIgnoreCase("birth")) {
-                eventType = "BIRTH";
-            }
-            else if (eventType.equalsIgnoreCase("death")) {
-                eventType = "DEATH";
-            }
-            else if (eventType.equalsIgnoreCase("marriage")) {
-                eventType = "MARRIAGE";
-            }
-            eventName.setText(getString(R.string.eventDetails, eventType, events.get(childPosition).getCity(),
-                    events.get(childPosition).getCountry(), events.get(childPosition).getYear()));
+            String personID = events.get(childPosition).getPersonID();
+            String eventPersonGender = Objects.requireNonNull(cache.getPeople().get(personID)).getGender();
 
+            TextView iconView = eventView.findViewById(R.id.iconEvent);
+            TextView eventName = eventView.findViewById(R.id.eventName);
             TextView eventPerson = eventView.findViewById(R.id.eventPerson);
-            eventPerson.setText(getString(R.string.eventUser, Objects.requireNonNull(cache.getPeople().get(events.get(childPosition).getPersonID())).getFirstName(),
-                    Objects.requireNonNull(cache.getPeople().get(events.get(childPosition).getPersonID())).getLastName()));
 
-            eventView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(PersonActivity.this, EventActivity.class);
-                    intent.putExtra(EventActivity.EVENT_ID, events.get(childPosition).getEventID());
-                    startActivity(intent);
+            if (eventPersonGender.equals("f")) {
+                if (cache.isFemaleEvents()) {
+                    iconView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24, 0, 0, 0);
+
+                    if (eventType.equalsIgnoreCase("birth")) {
+                        eventType = "BIRTH";
+                    }
+                    else if (eventType.equalsIgnoreCase("death")) {
+                        eventType = "DEATH";
+                    }
+                    else if (eventType.equalsIgnoreCase("marriage")) {
+                        eventType = "MARRIAGE";
+                    }
+                    eventName.setText(getString(R.string.eventDetails, eventType, events.get(childPosition).getCity(),
+                            events.get(childPosition).getCountry(), events.get(childPosition).getYear()));
+
+                    eventPerson.setText(getString(R.string.eventUser, Objects.requireNonNull(cache.getPeople().get(events.get(childPosition).getPersonID())).getFirstName(),
+                            Objects.requireNonNull(cache.getPeople().get(events.get(childPosition).getPersonID())).getLastName()));
+
+                    eventView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(PersonActivity.this, EventActivity.class);
+                            intent.putExtra(EventActivity.EVENT_ID, events.get(childPosition).getEventID());
+                            startActivity(intent);
+                        }
+                    });
                 }
-            });
+            }
+            else if (eventPersonGender.equals("m")) {
+                if (cache.isMaleEvents()) {
+                    iconView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24, 0, 0, 0);
+
+                    if (eventType.equalsIgnoreCase("birth")) {
+                        eventType = "BIRTH";
+                    }
+                    else if (eventType.equalsIgnoreCase("death")) {
+                        eventType = "DEATH";
+                    }
+                    else if (eventType.equalsIgnoreCase("marriage")) {
+                        eventType = "MARRIAGE";
+                    }
+                    eventName.setText(getString(R.string.eventDetails, eventType, events.get(childPosition).getCity(),
+                            events.get(childPosition).getCountry(), events.get(childPosition).getYear()));
+
+                    eventPerson.setText(getString(R.string.eventUser, Objects.requireNonNull(cache.getPeople().get(events.get(childPosition).getPersonID())).getFirstName(),
+                            Objects.requireNonNull(cache.getPeople().get(events.get(childPosition).getPersonID())).getLastName()));
+
+                    eventView.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Intent intent = new Intent(PersonActivity.this, EventActivity.class);
+                            intent.putExtra(EventActivity.EVENT_ID, events.get(childPosition).getEventID());
+                            startActivity(intent);
+                        }
+                    });
+                }
+            }
+
         }
 
         private void initializePersonView(View personView, final int childPosition) {

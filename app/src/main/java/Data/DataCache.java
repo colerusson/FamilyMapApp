@@ -29,15 +29,13 @@ public class DataCache {
     private boolean maleEvents;
     private boolean femaleEvents;
 
+    private String rootPersonID;
     private final Map<String, Person> people = new HashMap<>();
     private final Map<String, Event> events = new HashMap<>();
     private List<Person> personList = new ArrayList<>();
     private List<Event> eventList = new ArrayList<>();
     private final Map<String, List<Person>> peopleListForPerson = new HashMap<>();
     private final Map<String, List<Event>> eventListForPerson = new HashMap<>();
-    private String currentAuthToken;
-    private String rootPersonID;
-    private final List<String> authTokenList = new ArrayList<>();
     private final List<Event> maternalEvents = new ArrayList<>();
     private final List<Event> paternalEvents = new ArrayList<>();
     private final List<Event> userSpouseEvents = new ArrayList<>();
@@ -233,8 +231,6 @@ public class DataCache {
         this.rootPersonID = rootPersonID;
     }
 
-    public void setCurrentAuthToken(String currentAuthToken) { this.currentAuthToken = currentAuthToken; }
-
     public boolean isLifeStoryLines() {
         return lifeStoryLines;
     }
@@ -309,9 +305,7 @@ public class DataCache {
         eventList.clear();
         peopleListForPerson.clear();
         eventListForPerson.clear();
-        currentAuthToken = null;
         rootPersonID = null;
-        authTokenList.clear();
     }
 
 }
