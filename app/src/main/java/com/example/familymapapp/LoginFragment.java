@@ -95,7 +95,6 @@ public class LoginFragment extends Fragment {
                         if (success) {
                             String firstName = cache.getPeople().get(cache.getRootPersonID()).getFirstName();
                             String lastName = cache.getPeople().get(cache.getRootPersonID()).getLastName();
-                            // Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
                             if (listener != null) {
                                 listener.notifyDone();
                             }
@@ -138,7 +137,6 @@ public class LoginFragment extends Fragment {
                         if (success) {
                             String firstName = cache.getPeople().get(cache.getRootPersonID()).getFirstName();
                             String lastName = cache.getPeople().get(cache.getRootPersonID()).getLastName();
-                            // Toast.makeText(getActivity(), firstName + " " + lastName, Toast.LENGTH_LONG).show();
                             if (listener != null) {
                                 listener.notifyDone();
                             }

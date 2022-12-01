@@ -39,4 +39,7 @@
     <string name="spouse_lines">Spouse Lines</string>
     <string name="show_family_tree_lines">SHOW FAMILY TREE LINES</string>
     <string name="family_tree_lines">Family Tree Lines</string>
+    <string name="search_menu">searchMenu</string>
+    <string name="settings_menu">settings menu</string>
+    <string name="back_arrow_menu">back arrow menu</string>
 </resources>

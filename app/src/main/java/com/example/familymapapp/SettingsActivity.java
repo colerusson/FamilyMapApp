@@ -3,12 +3,13 @@ package com.example.familymapapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.Switch;
-import android.widget.Toast;
 
 import Data.DataCache;
 
@@ -29,6 +30,14 @@ public class SettingsActivity extends AppCompatActivity {
         Switch motherSide = findViewById(R.id.motherSideSwitch);
         Switch maleEvents = findViewById(R.id.maleEventsSwitch);
         Switch femaleEvents = findViewById(R.id.femaleEventsSwitch);
+
+        lifeStoryLines.setChecked(cache.isLifeStoryLines());
+        familyTreeLines.setChecked(cache.isFamilyTreeLines());
+        spouseLines.setChecked(cache.isSpouseLines());
+        fatherSide.setChecked(cache.isFatherSide());
+        motherSide.setChecked(cache.isMotherSide());
+        maleEvents.setChecked(cache.isMaleEvents());
+        femaleEvents.setChecked(cache.isFemaleEvents());
 
         lifeStoryLines.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -90,14 +99,23 @@ public class SettingsActivity extends AppCompatActivity {
         logout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // create an intent with 2 flags
-                // one to clear stack except this activity
-                // get this activity
-                // when you logout, make sure you clear the data cache
-                // cache.clear();
-                Toast.makeText(SettingsActivity.this,  "Logging Out", Toast.LENGTH_LONG).show();
+                cache.clear();
+                Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
             }
         });
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        return true;
+    }
+
 }
