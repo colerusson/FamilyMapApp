@@ -13,6 +13,7 @@ import java.util.Arrays;
 
 import request.LoginRequest;
 import request.RegisterRequest;
+import result.ClearResult;
 import result.EventResult;
 import result.LoginResult;
 import result.PersonResult;
@@ -182,6 +183,39 @@ public class ServerProxy  {
                 String respData = readString(respBody);
                 LoginResult loginResult = gson.fromJson(respData, LoginResult.class);
                 return loginResult;
+            }
+        }
+        catch (IOException e) {
+            // An exception was thrown, so display the exception's stack trace
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public ClearResult clear(String serverHost, String serverPort) {
+        try {
+            URL url = new URL("http://" + serverHost + ":" + serverPort + "/clear");
+            HttpURLConnection http = (HttpURLConnection)url.openConnection();
+            http.setRequestMethod("POST");
+            http.setDoOutput(false);	// There is a request body
+            Gson gson = new Gson();
+
+            // Connect to the server and send the HTTP request
+            http.connect();
+
+            if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream respBody = http.getInputStream();
+                String respData = readString(respBody);
+                ClearResult clearResult = gson.fromJson(respData, ClearResult.class);
+                return clearResult;
+            }
+            else {
+                // Get the error stream containing the HTTP response body (if any)
+                InputStream respBody = http.getErrorStream();
+                // Extract data from the HTTP response body
+                String respData = readString(respBody);
+                ClearResult clearResult = gson.fromJson(respData, ClearResult.class);
+                return clearResult;
             }
         }
         catch (IOException e) {
