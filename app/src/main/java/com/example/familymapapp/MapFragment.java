@@ -419,11 +419,12 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public boolean onOptionsItemSelected(MenuItem menu) {
         switch (menu.getItemId()) {
             case R.id.searchMenuItem:
-                Toast.makeText(getActivity(),  "You selected the search option", Toast.LENGTH_LONG).show();
+                Intent intentSearch = new Intent(getActivity(), SearchActivity.class);
+                startActivity(intentSearch);
                 return true;
             case R.id.settingsMenuItem:
-                Intent intent = new Intent(getActivity(), SettingsActivity.class);
-                startActivity(intent);
+                Intent intentSettings = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(intentSettings);
                 return true;
             default:
                 return super.onOptionsItemSelected(menu);
