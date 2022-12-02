@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,7 +16,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,18 +40,27 @@ public class SearchActivity extends AppCompatActivity {
         RecyclerView recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(SearchActivity.this));
 
-        String inputString = userInput.getText().toString();
+        userInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
-        List<Event> eventList = new ArrayList<>();
-        List<Person> peopleList = new ArrayList<>();
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                String inputString = userInput.getText().toString();
+                if (!inputString.equals("")) {
+                    List<Event> eventList = cache.getSearchedEventList(inputString.toLowerCase());
+                    List<Person> peopleList = cache.getSearchedPersonList(inputString.toLowerCase());
 
-        // TODO: Write logic to get the correct lists of events and people based on the input text, and current settings
+                    SearchResultsAdapter adapter = new SearchResultsAdapter(eventList, peopleList);
+                    recyclerView.setAdapter(adapter);
+                }
+            }
 
-        eventList = cache.getEventList();
-        peopleList = cache.getPersonList();
-
-        SearchResultsAdapter adapter = new SearchResultsAdapter(eventList, peopleList);
-        recyclerView.setAdapter(adapter);
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     private class SearchResultsAdapter extends RecyclerView.Adapter<SearchResultsViewHolder> {

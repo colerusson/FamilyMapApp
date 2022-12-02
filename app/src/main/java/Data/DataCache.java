@@ -315,6 +315,39 @@ public class DataCache {
         rootPersonID = null;
     }
 
+    public List<Event> getSearchedEventList(String inputString) {
+        List<Event> searchedEvents = new ArrayList<>();
+        for (Event event : eventList) {
+            String eventYear = String.valueOf(event.getYear());
+            if (event.getEventType().toLowerCase().contains(inputString) || event.getCity().toLowerCase().contains(inputString)
+                    || event.getCountry().toLowerCase().contains(inputString) || eventYear.contains(inputString)) {
+                if (Objects.requireNonNull(people.get(event.getPersonID())).getGender().equals("m")) {
+                    if (isMaleEvents()) {
+                        searchedEvents.add(event);
+                    }
+                }
+                else if (Objects.requireNonNull(people.get(event.getPersonID())).getGender().equals("f")) {
+                    if (isFemaleEvents()) {
+                        searchedEvents.add(event);
+                    }
+                }
+            }
+        }
+
+        return searchedEvents;
+    }
+
+    public List<Person> getSearchedPersonList(String inputString) {
+        List<Person> searchedPeople = new ArrayList<>();
+        for (Person person : personList) {
+            if (person.getFirstName().toLowerCase().contains(inputString) || person.getLastName().toLowerCase().contains(inputString)) {
+                searchedPeople.add(person);
+            }
+        }
+
+        return searchedPeople;
+    }
+
 
     /* FOR TESTING */
 
