@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 import java.util.Objects;
@@ -206,10 +205,14 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             if (viewType == EVENT_ITEM_VIEW_TYPE) {
-                Toast.makeText(SearchActivity.this,  "You selected an event!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(SearchActivity.this, EventActivity.class);
+                intent.putExtra(EventActivity.EVENT_ID, event.getEventID());
+                startActivity(intent);
             }
             else {
-                Toast.makeText(SearchActivity.this,  "You selected a person!", Toast.LENGTH_LONG).show();
+                Intent intent = new Intent(SearchActivity.this, PersonActivity.class);
+                intent.putExtra(PersonActivity.PERSON_ID, person.getPersonID());
+                startActivity(intent);
             }
         }
     }
