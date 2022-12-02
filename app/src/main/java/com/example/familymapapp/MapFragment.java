@@ -132,7 +132,20 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onMapReady(@NonNull GoogleMap googleMap) {
         map = googleMap;
         map.setOnMapLoadedCallback(this);
+        setUpMap();
+    }
 
+    @Override
+    public void onResume() {
+        if (map != null) {
+            map.clear();
+            setUpMap();
+        }
+
+        super.onResume();
+    }
+
+    private void setUpMap() {
         setUsedColors();
         Marker marker;
 
@@ -227,109 +240,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             }
         });
 
-    }
-
-    @Override
-    public void onResume() {
-        if (map != null) {
-            map.clear();
-
-            setUsedColors();
-            Marker marker;
-
-            List<Event> usedEvents = cache.getEventList();
-            if (!cache.isFatherSide()) {
-                if (!cache.isMotherSide()) {
-                    usedEvents = cache.getUserSpouseEvents();
-                }
-                else {
-                    usedEvents = cache.getMaternalEvents();
-                }
-            }
-            else if (!cache.isMotherSide()) {
-                usedEvents = cache.getPaternalEvents();
-            }
-
-            for (Event event : usedEvents) {
-                String personID = event.getPersonID();
-                Person person = cache.getPeople().get(personID);
-                LatLng newCity = new LatLng(event.getLatitude(), event.getLongitude());
-                float googleColor = 0;
-                if (Objects.equals(event.getEventType().toLowerCase(), "birth")) {
-                    googleColor = BitmapDescriptorFactory.HUE_RED;
-                }
-                else if (Objects.equals(event.getEventType().toLowerCase(), "death")) {
-                    googleColor = BitmapDescriptorFactory.HUE_BLUE;
-
-                }
-                else if (Objects.equals(event.getEventType().toLowerCase(), "marriage")) {
-                    googleColor = BitmapDescriptorFactory.HUE_GREEN;
-
-                }
-                else {
-                    if (unknownEvents.containsKey(event.getEventType().toLowerCase())) {
-                        if (unknownEvents.get(event.getEventType().toLowerCase()) != null) {
-                            googleColor = unknownEvents.get(event.getEventType().toLowerCase());
-                        }
-                    }
-                    else {
-                        Float colorType = BitmapDescriptorFactory.HUE_RED;
-                        for (Float color : usedColors.keySet()) {
-                            if (Boolean.FALSE.equals(usedColors.get(color))) {
-                                colorType = color;
-                                setColorUsed(color);
-                                break;
-                            }
-                        }
-                        if (colorType == BitmapDescriptorFactory.HUE_RED) {
-                            colorType = BitmapDescriptorFactory.HUE_AZURE;
-                        }
-                        unknownEvents.put(event.getEventType().toLowerCase(), colorType);
-                        googleColor = colorType;
-                    }
-                }
-                assert person != null;
-                if (person.getGender().equals("m")) {
-                    if (cache.isMaleEvents()) {
-                        marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", "
-                                + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
-                        assert marker != null;
-                        marker.setTag(event);
-                        currentMarkers.add(event);
-                    }
-                }
-                else if (person.getGender().equals("f")) {
-                    if (cache.isFemaleEvents()) {
-                        marker = map.addMarker(new MarkerOptions().position(newCity).title(event.getCity() + ", "
-                                + event.getCountry()).icon(BitmapDescriptorFactory.defaultMarker(googleColor)));
-                        assert marker != null;
-                        marker.setTag(event);
-                        currentMarkers.add(event);
-                    }
-                }
-
-                if (selectedEvent != null) {
-                    LatLng latLng = new LatLng(selectedEvent.getLatitude(), selectedEvent.getLongitude());
-                    map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                    eventInfo(selectedEvent);
-                }
-            }
-
-            map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-                @Override
-                public boolean onMarkerClick(@NonNull Marker marker) {
-                    currentEvent = (Event) marker.getTag();
-                    for (Polyline line : polyLines) {
-                        line.remove();
-                    }
-                    polyLines.clear();
-                    eventInfo((Event) Objects.requireNonNull(marker.getTag()));
-                    return false;
-                }
-            });
-        }
-
-        super.onResume();
     }
 
     private void eventInfo(Event event) {
