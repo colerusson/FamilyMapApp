@@ -315,4 +315,61 @@ public class DataCache {
         rootPersonID = null;
     }
 
+
+    /* FOR TESTING */
+
+    public String getRelationshipTypeTest(String relationshipPerson) {
+        String relationship;
+        Person rootPerson = people.get(rootPersonID);
+        assert rootPerson != null;
+        if (rootPerson.getMotherID() != null) {
+            if (rootPerson.getMotherID().equals(relationshipPerson)) {
+                relationship = "Mother";
+                return relationship;
+            }
+        }
+        if (rootPerson.getFatherID() != null) {
+            if (rootPerson.getFatherID().equals(relationshipPerson)) {
+                relationship = "Father";
+                return relationship;
+            }
+        }
+        if (rootPerson.getSpouseID() != null) {
+            if (rootPerson.getSpouseID().equals(relationshipPerson)) {
+                relationship = "Spouse";
+                return relationship;
+            }
+        }
+        relationship = "Child";
+        return relationship;
+    }
+
+    public void sortEventsTest(List<Event> events) {
+        for (int i = 0; i < events.size() - 1; ++i) {
+            Event firstEvent = events.get(i);
+            Event secondEvent = events.get(i + 1);
+            if (firstEvent.getYear() > secondEvent.getYear()) {
+                events.set(i, secondEvent);
+                events.set(i + 1, firstEvent);
+            }
+        }
+    }
+
+    public List<Event> filterEvents() {
+        if (!isFatherSide()) {
+            if (!isMotherSide()) {
+                return userSpouseEvents;
+            }
+            else {
+                return maternalEvents;
+            }
+        }
+        else if (!isMotherSide()) {
+            return paternalEvents;
+        }
+        else {
+            return eventListForPerson.get(rootPersonID);
+        }
+    }
+
 }

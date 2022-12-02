@@ -64,10 +64,10 @@ public class ServerProxyTest {
 
         LoginResult loginResult = serverProxy.login(serverHost, serverPort, loginRequest);
 
-//        assert(loginResult.getPersonID() == null);
-//        assert(loginResult.getUsername() == null);
-//        assert(loginResult.getMessage() != null);
-//        assert(!loginResult.isSuccess());
+        assert(loginResult.getPersonID() == null);
+        assert(loginResult.getUsername() == null);
+        assert(loginResult.getMessage() != null);
+        assert(!loginResult.isSuccess());
     }
 
     @Test
@@ -82,10 +82,10 @@ public class ServerProxyTest {
 
         RegisterResult registerResult = serverProxy.register(serverHost, serverPort, registerRequest);
 
-//        assert(registerResult.isSuccess());
-//        assert(registerResult.getPersonID() != null);
-//        assert(registerResult.getMessage() == null);
-//        assert(registerResult.getUsername().equals("username"));
+        assert(registerResult.isSuccess());
+        assert(registerResult.getPersonID() != null);
+        assert(registerResult.getMessage() == null);
+        assert(registerResult.getUsername().equals("username"));
     }
 
     @Test
@@ -108,10 +108,10 @@ public class ServerProxyTest {
 
         RegisterResult registerResult = serverProxy.register(serverHost, serverPort, registerRequestFail);
 
-//        assert(!registerResult.isSuccess());
-//        assert(registerResult.getPersonID() == null);
-//        assert(registerResult.getMessage() != null);
-//        assert(registerResult.getUsername() == null);
+        assert(!registerResult.isSuccess());
+        assert(registerResult.getPersonID() == null);
+        assert(registerResult.getMessage() != null);
+        assert(registerResult.getUsername() == null);
     }
 
     @Test
@@ -130,9 +130,9 @@ public class ServerProxyTest {
 
         List<Person> people = cache.getPersonList();
 
-//        assert(people != null);
-//        assert(people.size() > 0);
-//        assert(people.get(0).getAssociatedUsername().equals("username"));
+        assert(people != null);
+        assert(people.size() > 0);
+        assert(people.get(0).getAssociatedUsername().equals("username"));
     }
 
     @Test
@@ -153,7 +153,7 @@ public class ServerProxyTest {
 
         List<Person> people = cache.getPersonList();
 
-//        assert(people == null);
+        assert(people == null);
     }
 
     @Test
@@ -172,9 +172,9 @@ public class ServerProxyTest {
 
         List<Event> events = cache.getEventList();
 
-//        assert(events != null);
-//        assert(events.size() > 0);
-//        assert(events.get(0).getAssociatedUsername().equals("username"));
+        assert(events != null);
+        assert(events.size() > 0);
+        assert(events.get(0).getAssociatedUsername().equals("username"));
     }
 
     @Test
@@ -195,7 +195,7 @@ public class ServerProxyTest {
 
         List<Event> events = cache.getEventList();
 
-//        assert(events == null);
+        assert(events == null);
     }
 
 }

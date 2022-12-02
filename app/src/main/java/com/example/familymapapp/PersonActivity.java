@@ -274,7 +274,7 @@ public class PersonActivity extends AppCompatActivity {
     }
 
     private String getRelationshipType(String relationshipPerson) {
-        String relationship = null;
+        String relationship;
         Person rootPerson = cache.getPeople().get(rootPersonID);
         assert rootPerson != null;
         if (rootPerson.getMotherID() != null) {
