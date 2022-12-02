@@ -348,9 +348,6 @@ public class DataCache {
         return searchedPeople;
     }
 
-
-    /* FOR TESTING */
-
     public String getRelationshipTypeTest(String relationshipPerson) {
         String relationship;
         Person rootPerson = people.get(rootPersonID);
