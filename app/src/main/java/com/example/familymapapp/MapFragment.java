@@ -46,7 +46,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     private final Map<String, Float> unknownEvents = new HashMap<>();
     private final Map<Float, Boolean> usedColors = new HashMap<>();
     private final List<Polyline> polyLines = new ArrayList<>();
-    private final List<Event> currentMarkers = new ArrayList<>();
+    private List<Event> currentMarkers = new ArrayList<>();
 
     private TextView topText;
     private TextView bottomText;
@@ -139,6 +139,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     public void onResume() {
         if (map != null) {
             map.clear();
+            currentMarkers = new ArrayList<>();
             setUpMap();
         }
 
@@ -225,6 +226,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
                 eventInfo(selectedEvent);
             }
+        }
+
+        if (currentEvent != null) {
+            eventInfo(currentEvent);
         }
 
         map.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
