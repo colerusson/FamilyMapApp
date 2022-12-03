@@ -1,7 +1,5 @@
 package Test;
 
-
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.AfterEach;
@@ -59,84 +57,102 @@ public class CalculationsTest {
         assertEquals(spouseRelationship, "Spouse");
     }
 
-//    @Test
-//    public void relationshipTestFail() {
-//        String mother = "mother";
-//        String father = "father";
-//        String spouse = "spouse";
-//
-//        String motherRelationship = cache.getRelationshipTypeTest(mother);
-//        String fatherRelationship = cache.getRelationshipTypeTest(father);
-//        String spouseRelationship = cache.getRelationshipTypeTest(spouse);
-//
-//        assert(!motherRelationship.equals("Mother"));
-//        assert(!fatherRelationship.equals("Father"));
-//        assert(!spouseRelationship.equals("Spouse"));
-//    }
-//
-//    @Test
-//    public void filterEventsTestPass() {
-//        List<Event> eventsNoFilter = cache.getEventListForPerson(cache.getRootPersonID());
-//        cache.setFatherSide(false);
-//        cache.setMotherSide(false);
-//        List<Event> eventsUserSpouse = cache.filterEvents();
-//        cache.setFatherSide(true);
-//        List<Event> eventsFatherSide = cache.filterEvents();
-//        cache.setMotherSide(true);
-//        List<Event> eventsBothSides = cache.filterEvents();
-//
-//        assert(eventsNoFilter.size() == eventsBothSides.size());
-//        assert(eventsNoFilter.size() > eventsUserSpouse.size());
-//        assert(eventsNoFilter.size() > eventsFatherSide.size());
-//        assert(eventsUserSpouse.size() == 6);
-//    }
-//
-//    @Test
-//    public void filterEventsTestFail() {
-//        List<Event> eventsNoFilter = cache.getEventListForPerson(cache.getRootPersonID());
-//        List<Event> eventsUserSpouse = cache.filterEvents();
-//        List<Event> eventsFatherSide = cache.filterEvents();
-//        cache.setFatherSide(false);
-//        List<Event> eventsBothSides = cache.filterEvents();
-//
-//        assert(eventsNoFilter.size() != eventsBothSides.size());
-//        assert(eventsNoFilter.size() == eventsUserSpouse.size());
-//        assert(eventsNoFilter.size() == eventsFatherSide.size());
-//        assert(eventsUserSpouse.size() != 6);
-//    }
-//
-//    @Test
-//    public void sortEventsTestPass() {
-//        List<Event> events = cache.getEventListForPerson(cache.getRootPersonID());
-//        cache.sortEventsTest(events);
-//
-//        for (int i = 0; i < events.size() - 1; ++i) {
-//            assert(events.get(i).getYear() < events.get(i + 1).getYear());
-//        }
-//    }
-//
-//    @Test
-//    public void sortEventsTestFail() {
-//        List<Event> events = cache.getEventListForPerson(cache.getRootPersonID());
-//        boolean notSorted = false;
-//
-//        for (int i = 0; i < events.size() - 1; ++i) {
-//            if (events.get(i).getYear() > events.get(i + 1).getYear()) {
-//                notSorted = true;
-//            }
-//        }
-//
-//        assert(notSorted);
-//    }
-//
-//    @Test
-//    public void searchTestPass() {
-//
-//    }
-//
-//    @Test
-//    public void searchTestFail() {
-//
-//    }
+    @Test
+    public void relationshipTestFail() {
+        String mother = "mother";
+        String father = "father";
+        String spouse = "spouse";
+
+        String motherRelationship = cache.getRelationshipTypeTest(mother);
+        String fatherRelationship = cache.getRelationshipTypeTest(father);
+        String spouseRelationship = cache.getRelationshipTypeTest(spouse);
+
+        assertNotEquals(motherRelationship, "Mother");
+        assertNotEquals(fatherRelationship, "Father");
+        assertNotEquals(spouseRelationship, "Spouse");
+    }
+
+    @Test
+    public void filterEventsTestPass() {
+        List<Event> eventsNoFilter = cache.getEventListForPerson(cache.getRootPersonID());
+        cache.setFatherSide(false);
+        cache.setMotherSide(false);
+        List<Event> eventsUserSpouse = cache.filterEvents();
+        cache.setFatherSide(true);
+        List<Event> eventsFatherSide = cache.filterEvents();
+        cache.setMotherSide(true);
+        List<Event> eventsBothSides = cache.filterEvents();
+
+        assertEquals(eventsNoFilter.size(), eventsBothSides.size());
+        assertNotEquals(eventsNoFilter.size(), eventsUserSpouse.size());
+        assertNotEquals(eventsNoFilter.size(), eventsFatherSide.size());
+        assertEquals(6, eventsUserSpouse.size());
+    }
+
+    @Test
+    public void filterEventsTestFail() {
+        List<Event> eventsNoFilter = cache.getEventListForPerson(cache.getRootPersonID());
+        List<Event> eventsUserSpouse = cache.filterEvents();
+        List<Event> eventsFatherSide = cache.filterEvents();
+        cache.setFatherSide(false);
+        List<Event> eventsBothSides = cache.filterEvents();
+
+        assertNotEquals(eventsNoFilter.size(), eventsBothSides.size());
+        assertEquals(eventsNoFilter.size(), eventsUserSpouse.size());
+        assertEquals(eventsNoFilter.size(), eventsFatherSide.size());
+        assertNotEquals(6, eventsUserSpouse.size());
+    }
+
+    @Test
+    public void sortEventsTestPass() {
+        List<Event> events = cache.getEventListForPerson(cache.getRootPersonID());
+        cache.sortEventsTest(events);
+
+        for (int i = 0; i < events.size() - 1; ++i) {
+            if (events.get(i).getYear() != 2014 && events.get(i + 1).getYear() != 2014) {
+                assertNotEquals(events.get(i).getYear(), events.get(i + 1).getYear());
+            }
+        }
+    }
+
+    @Test
+    public void sortEventsTestFail() {
+        List<Event> events = cache.getEventListForPerson(cache.getRootPersonID());
+        boolean notSorted = false;
+
+        for (int i = 0; i < events.size() - 1; ++i) {
+            if (events.get(i).getYear() > events.get(i + 1).getYear()) {
+                notSorted = true;
+            }
+        }
+
+        assertTrue(notSorted);
+    }
+
+    @Test
+    public void searchTestPass() {
+        String inputPerson = "sheila";
+        String inputEvent = "completed";
+        List<Event> searchedEvents = cache.getSearchedEventList(inputEvent);
+        List<Person> searchedPeople = cache.getSearchedPersonList(inputPerson);
+
+        assertNotNull(searchedPeople);
+        assertNotNull(searchedEvents);
+        assertEquals(2, searchedEvents.size());
+        assertEquals(1, searchedPeople.size());
+        assertEquals("sheila", searchedPeople.get(0).getFirstName().toLowerCase());
+        assertEquals("completed asteroids", searchedEvents.get(0).getEventType().toLowerCase());
+    }
+
+    @Test
+    public void searchTestFail() {
+        String inputPerson = "garbage";
+        String inputEvent = "garbage";
+        List<Event> searchedEvents = cache.getSearchedEventList(inputEvent);
+        List<Person> searchedPeople = cache.getSearchedPersonList(inputPerson);
+
+        assertNull(searchedPeople);
+        assertNull(searchedEvents);
+    }
 
 }
