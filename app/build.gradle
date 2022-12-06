@@ -52,7 +52,7 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.1'
     testImplementation 'org.junit.jupiter:junit-jupiter-params:5.9.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.9.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     implementation ("com.joanzapata.iconify:android-iconify:2.2.2") {
         exclude group: "com.android.support"

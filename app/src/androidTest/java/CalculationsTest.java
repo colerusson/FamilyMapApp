@@ -1,12 +1,9 @@
-package Test;
-
-import static org.junit.jupiter.api.Assertions.*;
-
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.List;
+import java.util.Objects;
 
 import Data.DataCache;
 import Data.ServerProxy;
@@ -20,13 +17,13 @@ public class CalculationsTest {
     static private final DataCache cache = DataCache.getInstance();
     private final ServerProxy serverProxy = new ServerProxy();
 
-    @BeforeEach
+    @Before
     public void setUp() {
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setUsername("sheila");
         loginRequest.setPassword("parker");
 
-        String serverHost = "localhost";
+        String serverHost = "10.0.2.2";
         String serverPort = "8080";
         LoginResult loginResult = serverProxy.login(serverHost, serverPort, loginRequest);
 
@@ -35,7 +32,7 @@ public class CalculationsTest {
         serverProxy.setLists();
     }
 
-    @AfterEach
+    @After
     public void takeDown() {
         cache.clear();
     }
@@ -52,9 +49,9 @@ public class CalculationsTest {
         String fatherRelationship = cache.getRelationshipTypeTest(father);
         String spouseRelationship = cache.getRelationshipTypeTest(spouse);
 
-        assertEquals(motherRelationship, "Mother");
-        assertEquals(fatherRelationship, "Father");
-        assertEquals(spouseRelationship, "Spouse");
+        assert(motherRelationship.equals("Mother"));
+        assert(fatherRelationship.equals("Father"));
+        assert(spouseRelationship.equals("Spouse"));
     }
 
     @Test
@@ -67,9 +64,9 @@ public class CalculationsTest {
         String fatherRelationship = cache.getRelationshipTypeTest(father);
         String spouseRelationship = cache.getRelationshipTypeTest(spouse);
 
-        assertNotEquals(motherRelationship, "Mother");
-        assertNotEquals(fatherRelationship, "Father");
-        assertNotEquals(spouseRelationship, "Spouse");
+        assert(!motherRelationship.equals("Mother"));
+        assert(!fatherRelationship.equals("Father"));
+        assert(!spouseRelationship.equals("Spouse"));
     }
 
     @Test
@@ -83,10 +80,10 @@ public class CalculationsTest {
         cache.setMotherSide(true);
         List<Event> eventsBothSides = cache.filterEvents();
 
-        assertEquals(eventsNoFilter.size(), eventsBothSides.size());
-        assertNotEquals(eventsNoFilter.size(), eventsUserSpouse.size());
-        assertNotEquals(eventsNoFilter.size(), eventsFatherSide.size());
-        assertEquals(6, eventsUserSpouse.size());
+        assert(eventsNoFilter.size() == eventsBothSides.size());
+        assert(eventsNoFilter.size() != eventsUserSpouse.size());
+        assert(eventsNoFilter.size() != eventsFatherSide.size());
+        assert(eventsUserSpouse.size() == 6);
     }
 
     @Test
@@ -97,27 +94,25 @@ public class CalculationsTest {
         cache.setFatherSide(false);
         List<Event> eventsBothSides = cache.filterEvents();
 
-        assertNotEquals(eventsNoFilter.size(), eventsBothSides.size());
-        assertEquals(eventsNoFilter.size(), eventsUserSpouse.size());
-        assertEquals(eventsNoFilter.size(), eventsFatherSide.size());
-        assertNotEquals(6, eventsUserSpouse.size());
+        assert(eventsNoFilter.size() != eventsBothSides.size());
+        assert(eventsNoFilter.size() == eventsUserSpouse.size());
+        assert(eventsNoFilter.size() == eventsFatherSide.size());
+        assert(eventsUserSpouse.size() != 6);
     }
 
     @Test
     public void sortEventsTestPass() {
-        List<Event> events = cache.getEventListForPerson(cache.getRootPersonID());
+        List<Event> events = cache.getEventListForPerson("Mrs_Jones");
         cache.sortEventsTest(events);
 
         for (int i = 0; i < events.size() - 1; ++i) {
-            if (events.get(i).getYear() != 2014 && events.get(i + 1).getYear() != 2014) {
-                assertNotEquals(events.get(i).getYear(), events.get(i + 1).getYear());
-            }
+            assert(!Objects.equals(events.get(i).getYear(), events.get(i + 1).getYear()));
         }
     }
 
     @Test
     public void sortEventsTestFail() {
-        List<Event> events = cache.getEventListForPerson(cache.getRootPersonID());
+        List<Event> events = cache.getEventListForPerson("Mrs_Jones");
         boolean notSorted = false;
 
         for (int i = 0; i < events.size() - 1; ++i) {
@@ -126,7 +121,7 @@ public class CalculationsTest {
             }
         }
 
-        assertTrue(notSorted);
+        assert(notSorted);
     }
 
     @Test
@@ -136,12 +131,12 @@ public class CalculationsTest {
         List<Event> searchedEvents = cache.getSearchedEventList(inputEvent);
         List<Person> searchedPeople = cache.getSearchedPersonList(inputPerson);
 
-        assertNotNull(searchedPeople);
-        assertNotNull(searchedEvents);
-        assertEquals(2, searchedEvents.size());
-        assertEquals(1, searchedPeople.size());
-        assertEquals("sheila", searchedPeople.get(0).getFirstName().toLowerCase());
-        assertEquals("completed asteroids", searchedEvents.get(0).getEventType().toLowerCase());
+        assert(searchedPeople != null);
+        assert(searchedEvents != null);
+        assert(searchedEvents.size() == 2);
+        assert(searchedPeople.size() == 1);
+        assert(searchedPeople.get(0).getFirstName().toLowerCase().equals("sheila"));
+        assert(searchedEvents.get(0).getEventType().toLowerCase().equals("completed asteroids"));
     }
 
     @Test
@@ -151,8 +146,8 @@ public class CalculationsTest {
         List<Event> searchedEvents = cache.getSearchedEventList(inputEvent);
         List<Person> searchedPeople = cache.getSearchedPersonList(inputPerson);
 
-        assertNull(searchedPeople);
-        assertNull(searchedEvents);
+        assert(searchedPeople.size() == 0);
+        assert(searchedEvents.size() == 0);
     }
 
 }
